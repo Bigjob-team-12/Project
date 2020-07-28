@@ -6,6 +6,8 @@
 > https://umbum.dev/262
 - DeepLanking 리뷰 2
 > https://you359.github.io/meta%20learning/DeepRanking/
+- Triplet Network
+> https://m.blog.naver.com/PostView.nhn?blogId=4u_olion&logNo=221478534498&proxyReferer=https:%2F%2Fwww.google.com%2F
 
 
 
