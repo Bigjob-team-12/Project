@@ -18,4 +18,6 @@
   - annotation: Left Eye, Right Eye, Mouth, Left Ear-1, Left Ear-2, Left Ear-3, Right Ear-1, Right Ear-2, Right Ear-3
   - 종 정보 없음. 9997장
 - [ImageNet](http://image-net.org/synset?wnid=n02121808)
-  - 확인 필요: 종별 분류 있으나 페이지가 잘 열리지 않음
+  - 페르시안, 앙고라, 샴고양이, 포메라니안, 사모예드 등 종별 1천 개 이상의 데이터 포함.
+    - Tabby와 같은 의미적 특성을 살린 분류도 존재.
+  - 미로그인시 이미지는 flickr 등의 링크로 제공. 직접 다운로드 필요.
