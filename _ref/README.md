@@ -11,11 +11,11 @@
 - [Stanford Dogs Dataset](http://vision.stanford.edu/aditya86/ImageNetDogs/main.html)
   - 120 카테고리, 총 20,580장
 - [The Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/)
-  - 개, 고양이 총 37종 * 최대 200장
+  - 개, 고양이 총 37종 * 최대 200장. 고양이 2371장, 개 4978장, 총 7349장
 - [70 Dog Breeds-Image Data Set](https://www.kaggle.com/gpiosenka/70-dog-breedsimage-data-set?)
   - 개인 인터넷 수집. 70종 * 10장 = 700장
 - [Cat Dataset](https://www.kaggle.com/crawford/cat-dataset)
   - annotation: Left Eye, Right Eye, Mouth, Left Ear-1, Left Ear-2, Left Ear-3, Right Ear-1, Right Ear-2, Right Ear-3
-  - 종 정보 없음
+  - 종 정보 없음. 9997장
 - [ImageNet](http://image-net.org/synset?wnid=n02121808)
   - 확인 필요: 종별 분류 있으나 페이지가 잘 열리지 않음
