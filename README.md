@@ -7,12 +7,12 @@
   - 공고 건 중 찾고자 하는 반려동물과 <b>가장 유사한 동물</b>을 우선적으로 노출, 또는 신규 공고 등록 시 유사도 확인하여 알림.
   - 주기적으로 신규 데이터 수집-전처리-적재-임베딩 및 등록 중인 query 이미지와 유사도 비교 후 push까지 자동화. 
   - 데이터:
-    > for 모델 학습 - 품종 등 카테고리 labeled 된 배포 데이터셋 출처 다수
+    > for 모델 학습 - 품종 등 카테고리 labeled 된 배포 데이터셋 출처 다수  
     > for 시스템 실사용 - 농림부 동물보호관리시스템, 유기동물네트워크 게시판 개인 업로드, SNS 등
   - 모델 keywords:
-    > Metric Learning (e.g. triplet/ center/ large margin loss)
-    > DeepRanking, Attention, GradCAM
+    > Metric Learning (e.g. triplet/ center/ large margin loss)  
+    > DeepRanking, Attention, GradCAM  
     > Image Retrieval
   - 기타 고려사항:
-    > 눈 색깔, 무늬 형태 등 도메인 특화 피처들의 반영 가능성
+    > 눈 색깔, 무늬 형태 등 도메인 특화 피처들의 반영 가능성  
     > 야외 생활로 인한, 유기 기간에 따른 외형적 변화
