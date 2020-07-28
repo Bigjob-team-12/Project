@@ -17,3 +17,5 @@
 - [Cat Dataset](https://www.kaggle.com/crawford/cat-dataset)
   - annotation: Left Eye, Right Eye, Mouth, Left Ear-1, Left Ear-2, Left Ear-3, Right Ear-1, Right Ear-2, Right Ear-3
   - 종 정보 없음
+- [ImageNet](http://image-net.org/synset?wnid=n02121808)
+  - 확인 필요: 종별 분류 있으나 페이지가 잘 열리지 않음
