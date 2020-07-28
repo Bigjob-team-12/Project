@@ -1,27 +1,11 @@
 ### paper 참고 자료 링크
 
-- Metric Learning 발전 동향
-> https://blog.est.ai/2020/02/%EB%A9%94%ED%8A%B8%EB%A6%AD%EB%9F%AC%EB%8B%9D-%EA%B8%B0%EB%B0%98-%EC%95%88%EA%B2%BD-%EA%B2%80%EC%83%89-%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B0%9C%EB%B0%9C%EA%B8%B02/
-- DeepLanking 리뷰 1
-> https://umbum.dev/262
-- DeepLanking 리뷰 2
-> https://you359.github.io/meta%20learning/DeepRanking/
-- Triplet Network
-> https://m.blog.naver.com/PostView.nhn?blogId=4u_olion&logNo=221478534498&proxyReferer=https:%2F%2Fwww.google.com%2F
+- [Metric Learning 발전 동향](https://blog.est.ai/2020/02/%EB%A9%94%ED%8A%B8%EB%A6%AD%EB%9F%AC%EB%8B%9D-%EA%B8%B0%EB%B0%98-%EC%95%88%EA%B2%BD-%EA%B2%80%EC%83%89-%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B0%9C%EB%B0%9C%EA%B8%B02/)
+- [DeepLanking1](https://umbum.dev/262)
+- [DeepLanking2](https://you359.github.io/meta%20learning/DeepRanking/)
+- [Triplet Network[(https://m.blog.naver.com/PostView.nhn?blogId=4u_olion&logNo=221478534498&proxyReferer=https:%2F%2Fwww.google.com%2F)
 
 
 
 ### dataset 참고 자료 링크
-- The Oxford-IIIT Pet Dataset
-  - https://www.robots.ox.ac.uk/~vgg/data/pets/
-  - 개, 고양이 총 37종 * 최대 200장
-- Stanford Dogs Dataset
-  - http://vision.stanford.edu/aditya86/ImageNetDogs/
-  - 120 카테고리, 총 20,580장
-- 70 Dog Breeds-Image Data Set
-  - https://www.kaggle.com/gpiosenka/70-dog-breedsimage-data-set?
-  - 개인 인터넷 수집. 70종 * 10장 = 700장
-- Cat Dataset
-  - https://www.kaggle.com/crawford/cat-dataset
-  - annotation: Left Eye, Right Eye, Mouth, Left Ear-1, Left Ear-2, Left Ear-3, Right Ear-1, Right Ear-2, Right Ear-3
-  - 종 정보 없음
+- [Stanford Dogs Dataset](http://vision.stanford.edu/aditya86/ImageNetDogs/main.html)
