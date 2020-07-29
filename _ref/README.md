@@ -29,3 +29,6 @@
 - [Cat Breeds](https://www.kaggle.com/ma7555/cat-breeds-dataset?)
   - 고양이 67종 / 약 67000개
   - 나이 / 성별 / 크기
+- [Petpy API](https://github.com/aschleg/petpy)
+  - 개, 고양이 image API
+  - 종류는 확인 못하는 걸로 
