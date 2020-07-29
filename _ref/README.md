@@ -26,3 +26,6 @@
     - Tabby, puppy 등 특성 분류도 존재.
   - 이미지는 flickr 등의 링크로 제공. 직접 다운로드 필요.
     - 확인 결과 삭제된 데이터, 2마리 이상의 개체가 포함되어 있는 이미지 다수 존재.
+- [Cat Breeds](https://www.kaggle.com/ma7555/cat-breeds-dataset?)
+  - 고양이 67종 / 약 67000개
+  - 나이 / 성별 / 크기
