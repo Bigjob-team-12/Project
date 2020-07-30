@@ -25,6 +25,9 @@ def download(url, params={}, method='GET', headers={'user-agent': 'Mozilla/5.0 (
 
     return resp
 
+def url_to_DB(url_num, num, image):
+    pass
+
 def protect_animals_url1_to_urllist(url, page_range):
     '''
     동물보호관리시스템 유기동물 공고에서 page range만큼 url crawling
@@ -35,6 +38,7 @@ def protect_animals_url1_to_urllist(url, page_range):
     print('-' * 10, ' protect_url1 Crawling start  ', '-' * 10)
     urllist = []
     for page in page_range:
+        print(page)
         resp = download(url=url, params={'page': page}, method='GET')
         [urllist.append(url.replace('list', 'view') + '?' + _) for _ in
          re.findall(r'na_open_window\(\'win\', \'abandonment_view_api.php\?([^\"]+)', resp.text)]
@@ -165,17 +169,13 @@ def protect_animals_url2_scraping(no, n):
     result = []
     url = 'http://www.zooseyo.or.kr/Yu_board/petcare_view.html'
 
-    print(no)
     for num in range(no, no - n, -1):
         resp = download(url=url, params={'no': num}, method='GET')
         dom = BeautifulSoup(resp.text, 'html.parser')
 
         data = dict()
-        # 찾은 동물은 pass
-        if not re.findall(r'pet_find_phoneblind_img', resp.text):
-            # text = dom.select('td:nth-of-type(1) td')#[63].select('td')[1]#.text.split('\n')
-            # text = dom.select('td:nth-of-type(1) td td')
-
+        # 찾은 동물 & 존재하지 않는 num pass
+        if not re.findall(r'pet_find_phoneblind_img', resp.text) and r'존재하지 않는 게시물입니다.' not in resp.text:
             text = dom.find('td', {'bgcolor' : '#FFFFFF'}) # .select_one('table > tr > td:nth-of-type(2)')
 
             data['no'] = num
@@ -186,17 +186,12 @@ def protect_animals_url2_scraping(no, n):
             data['address'] = text.select_one('table > tr:nth-of-type(5) tr > td:nth-of-type(2)').text
             data['title'] = text.select_one('table > tr:nth-of-type(7) tr > td:nth-of-type(2)').text
             data['text'] = text.select_one('table > tr:nth-of-type(9) p').text
-
-            # data['image'] = str(['http://www.zooseyo.or.kr' + _ for _ in
-            #                  set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))])
-            #
-            # text = dom.select('p')
-            #
-            # data['text'] = text[0].text.strip()
+            data['url'] = url + '?no' + str(num)
+            data['time'] = datetime.now()
 
             # 이미지 Table 생성 / 이미지 insert
+            [url_to_DB(2, num, 'http://www.zooseyo.or.kr' + _['src']) for _ in text.select('table > tr:nth-of-type(11) img')]
 
-            # print(dom.select('p > br')[1].text.strip(), dom.select('p > br')[0].text.strip())
             result.append(data)
 
     print('-' * 10, ' protect_url2 Scraping end  ', '-' * 10)
@@ -213,8 +208,8 @@ def protect_animals_url2_to_DB(data):
                            db='project', charset='utf8')
     curs = conn.cursor()
 
-    sql = '''INSERT INTO protect_animals_url2(number, name, date, phone_num, sex, address, image, characteristic)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'''
+    sql = '''INSERT INTO protect_animals_url2(number, name, date, phone_num, sex, address, title, text, url, time)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
 
     # insert data
     [curs.execute(sql, (tuple(_.values()))) for _ in data]
@@ -244,7 +239,7 @@ def protect_animals_url2(n):
     [print(_) for _ in protect_animals_url2_result]
     print('protect_animals_url2에서 가지고 온 data 갯수 : ', len(protect_animals_url2_result))
 
-    # protect_animals_url2_to_DB(protect_animals_url2_result)
+    protect_animals_url2_to_DB(protect_animals_url2_result)
 
 def missing_animals_url3_find_no(dom):
     '''
@@ -344,11 +339,11 @@ def missing_animals_url3(n):
     missing_animals_url3_to_DB(missing_animals_url3_result)
 
 if __name__ == '__main__':
-    # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
+    # # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
     # protect_animals_url1(page = 10)
 
-    # # '유기견보호센터 유기동물 보호중' url의 데이터 수집
-    protect_animals_url2(30)
+    # '유기견보호센터 유기동물 보호중' url의 데이터 수집
+    protect_animals_url2(100)
 
     # # '유기견보호센터 실종동물' url의 데이터 수집
     # missing_animals_url3(30)
