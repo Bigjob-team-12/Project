@@ -187,20 +187,14 @@ def protect_animals_url2_scraping(no, n):
             data['title'] = text.select_one('table > tr:nth-of-type(7) tr > td:nth-of-type(2)').text
             data['text'] = text.select_one('table > tr:nth-of-type(9) p').text
 
-            # 글제목 / 내용 / 이미지
-            print(text.select_one('table > tr:nth-of-type(11) img'))
-            print(len(text.select('table > tr:nth-of-type(11) img')))
-            print(data)
+            # data['image'] = str(['http://www.zooseyo.or.kr' + _ for _ in
+            #                  set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))])
+            #
+            # text = dom.select('p')
+            #
+            # data['text'] = text[0].text.strip()
 
-
-            break
-
-            data['image'] = str(['http://www.zooseyo.or.kr' + _ for _ in
-                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))])
-
-            text = dom.select('p')
-
-            data['text'] = text[0].text.strip()
+            # 이미지 Table 생성 / 이미지 insert
 
             # print(dom.select('p > br')[1].text.strip(), dom.select('p > br')[0].text.strip())
             result.append(data)
