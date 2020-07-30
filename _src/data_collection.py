@@ -48,7 +48,7 @@ def protect_animals_url1_check_data_existence(data):
     :return: 데이터 유무 : 1 or 0
     '''
     curs = conn.cursor()
-    # 수정 해야됨
+    # 해당 데이터 존재 유무 확인
     sql = 'SELECT count(*) from protect_animals_url1 where number like "' + data['공고번호'] + '"'
 
     # insert data
@@ -131,10 +131,11 @@ def protect_animals_url1(page):
     # urllist scraping
     protect_animals_url1_result = protect_animals_url1_scraping(protect_url1_list)
 
-    # protect_url1_result to DB
+
     [print(_) for _ in protect_animals_url1_result]
     print('protect_animals_url1에서 가지고 온 data 갯수 : ', len(protect_animals_url1_result))
 
+    # protect_url1_result to DB
     protect_animals_url1_to_DB(protect_animals_url1_result)
 
 def protect_animals_url2_find_no(dom):
@@ -163,6 +164,8 @@ def protect_animals_url2_scraping(no, n):
     # no부터 n번 돌면서 각 정보 Scraping
     result = []
     url = 'http://www.zooseyo.or.kr/Yu_board/petcare_view.html'
+
+    print(no)
     for num in range(no, no - n, -1):
         resp = download(url=url, params={'no': num}, method='GET')
         dom = BeautifulSoup(resp.text, 'html.parser')
@@ -170,10 +173,28 @@ def protect_animals_url2_scraping(no, n):
         data = dict()
         # 찾은 동물은 pass
         if not re.findall(r'pet_find_phoneblind_img', resp.text):
-            text = dom.select('td')[63].text.split()
+            # text = dom.select('td:nth-of-type(1) td')#[63].select('td')[1]#.text.split('\n')
+            # text = dom.select('td:nth-of-type(1) td td')
+
+            text = dom.find('td', {'bgcolor' : '#FFFFFF'}) # .select_one('table > tr > td:nth-of-type(2)')
 
             data['no'] = num
-            data['name'], data['date'], data['phone_num'], data['sex'], data['address'] = text[0], text[1], text[2], text[3], text[4] + ' ' + text[5]
+            data['name'] = text.select_one('table > tr > td:nth-of-type(2)').text
+            data['date'] = text.select_one('table > tr > td:nth-of-type(4)').text
+            data['phone_num'] = text.select_one('table > tr:nth-of-type(3) tr > td:nth-of-type(2)').text
+            data['sex'] = text.select_one('table > tr:nth-of-type(3) tr > td:nth-of-type(4)').text
+            data['address'] = text.select_one('table > tr:nth-of-type(5) tr > td:nth-of-type(2)').text
+            data['title'] = text.select_one('table > tr:nth-of-type(7) tr > td:nth-of-type(2)').text
+            data['text'] = text.select_one('table > tr:nth-of-type(9) p').text
+
+            # 글제목 / 내용 / 이미지
+            print(text.select_one('table > tr:nth-of-type(11) img'))
+            print(len(text.select('table > tr:nth-of-type(11) img')))
+            print(data)
+
+
+            break
+
             data['image'] = str(['http://www.zooseyo.or.kr' + _ for _ in
                              set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))])
 
@@ -229,7 +250,7 @@ def protect_animals_url2(n):
     [print(_) for _ in protect_animals_url2_result]
     print('protect_animals_url2에서 가지고 온 data 갯수 : ', len(protect_animals_url2_result))
 
-    protect_animals_url2_to_DB(protect_animals_url2_result)
+    # protect_animals_url2_to_DB(protect_animals_url2_result)
 
 def missing_animals_url3_find_no(dom):
     '''
@@ -330,10 +351,10 @@ def missing_animals_url3(n):
 
 if __name__ == '__main__':
     # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
-    protect_animals_url1(page = 3)
+    # protect_animals_url1(page = 10)
 
     # # '유기견보호센터 유기동물 보호중' url의 데이터 수집
-    # protect_animals_url2(30)
+    protect_animals_url2(30)
 
     # # '유기견보호센터 실종동물' url의 데이터 수집
     # missing_animals_url3(30)
