@@ -26,29 +26,19 @@ ENGINE=InnoDB
 DROP TABLE IF EXISTS protect_animals_url2;
 CREATE TABLE `protect_animals_url2` (
 	`no` INT NOT NULL AUTO_INCREMENT,
-	`number` INT NOT NULL DEFAULT '0',
-	`name` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'utf8mb4_0900_ai_ci',
-	`date` DATE NOT NULL,
-	`phone_num` CHAR(13) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`sex` VARCHAR(10) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`address` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`image` VARCHAR(300) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`characteristic` MEDIUMTEXT NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	PRIMARY KEY (`no`) USING BTREE
-);
-
-DROP TABLE IF EXISTS missing_animals_url3;
-CREATE TABLE `missing_animals_url3` (
-	`no` INT NOT NULL AUTO_INCREMENT,
-	`number` INT NOT NULL,
-	`phone_num` CHAR(13) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`address` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`date` VARCHAR(100) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`sex` VARCHAR(10) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`image` VARCHAR(300) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
-	`characteristic` MEDIUMTEXT NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`number` INT NOT NULL DEFAULT '0' COMMENT '고유 번호',
+	`name` VARCHAR(20) NOT NULL DEFAULT '' COMMENT '등록인' COLLATE 'utf8mb4_0900_ai_ci',
+	`date` DATE NOT NULL COMMENT '발견한 날짜',
+	`phone_num` CHAR(13) NOT NULL COMMENT '연락처' COLLATE 'utf8mb4_0900_ai_ci',
+	`sex` VARCHAR(10) NOT NULL COMMENT '성별' COLLATE 'utf8mb4_0900_ai_ci',
+	`address` VARCHAR(50) NOT NULL COMMENT '발견한 장소' COLLATE 'utf8mb4_0900_ai_ci',
+	`title` MEDIUMTEXT NOT NULL COMMENT '글 제목' COLLATE 'utf8mb4_0900_ai_ci',
+	`text` MEDIUMTEXT NOT NULL COMMENT '내용' COLLATE 'utf8mb4_0900_ai_ci',
+	`url` MEDIUMTEXT NOT NULL COMMENT 'scraping 한 url' COLLATE 'utf8mb4_0900_ai_ci',
+	`time` DATETIME NOT NULL COMMENT 'scraping 한 시간',
 	PRIMARY KEY (`no`) USING BTREE
 )
 COLLATE='utf8mb4_0900_ai_ci'
 ENGINE=InnoDB
+AUTO_INCREMENT=11
 ;
