@@ -26,7 +26,33 @@ def download(url, params={}, method='GET', headers={'user-agent': 'Mozilla/5.0 (
     return resp
 
 def url_to_DB(url_num, num, image):
-    pass
+    curs = conn.cursor()
+
+    sql = '''INSERT INTO url(url_num, num, image)
+                VALUES (%s,%s,%s)'''
+
+    # insert data
+    curs.execute(sql, (url_num, num, image))
+    conn.commit()
+def check_data_existence(url_num, data):
+    '''
+    해당 data 유무 check
+    :param data:
+    :return: 데이터 유무 : 1 or 0
+    '''
+    curs = conn.cursor()
+
+    # dic = dict()
+
+    if url_num == 1: sql = 'SELECT count(*) from protect_animals_url1 where number like "'+ data['공고번호'] +'"'
+    elif url_num == 2: sql = 'SELECT count(*) from protect_animals_url2 where number = ' + str(data['no'])
+    elif url_num == 3: sql = 'SELECT count(*) from missing_animals_url3 where number = ' + str(data['no'])
+
+    # check data
+    curs.execute(sql)
+
+    rows = curs.fetchall()
+    return rows[0][0]
 
 def protect_animals_url1_to_urllist(url, page_range):
     '''
@@ -45,21 +71,6 @@ def protect_animals_url1_to_urllist(url, page_range):
 
     print('-' * 10, ' protect_url1 Crawling end  ', '-' * 10)
     return urllist
-def protect_animals_url1_check_data_existence(data):
-    '''
-    해당 data 유무 check
-    :param data:
-    :return: 데이터 유무 : 1 or 0
-    '''
-    curs = conn.cursor()
-    # 해당 데이터 존재 유무 확인
-    sql = 'SELECT count(*) from protect_animals_url1 where number like "' + data['공고번호'] + '"'
-
-    # insert data
-    curs.execute(sql)
-
-    rows = curs.fetchall()
-    return rows[0][0]
 def protect_animals_url1_scraping(urllist):
     '''
     image & 필요한 정보 scraping
@@ -74,28 +85,47 @@ def protect_animals_url1_scraping(urllist):
         data = dict()
         resp = download(url=url, method='GET')
         dom = BeautifulSoup(resp.text, 'lxml')
-        tmp = dom.select('table.viewTable th, table.viewTable td')
-        tmp = tmp[1:21] + tmp[-15:3]
+        text = dom.find('table', class_ = 'viewTable')
 
-        for i in range(0, len(tmp), 2):
-            data[tmp[i].text.strip()] = tmp[i + 1].text.strip()
-        data['나이'] = data['나이/체중'][:4]
-        data['체중'] = data['나이/체중'][11:]
-        del data['나이/체중']
-
-        # DB에 data 유무 확인
-        if protect_animals_url1_check_data_existence(data):
-            break
-
-        tmp = dom.select('strong')
-        data['보호센터이름'] = tmp[0].text
-        data['보호센터전화번호'] = tmp[1].text
-        data['보호장소'] = tmp[2].text
-
+        data['공고번호'] = text.select_one('tr:nth-of-type(2) td').text
+        data['품종'] = text.select_one('tr:nth-of-type(3) > td').text
+        data['색상'] = text.select_one('tr:nth-of-type(4) > td').text
+        data['성별'] = text.select_one('tr:nth-of-type(5) > td').text
+        data['중성화여부'] = text.select_one('tr:nth-of-type(6) > td').text
+        data['나이/체중'] = text.select_one('tr:nth-of-type(7) > td').text
+        data['접수일시'] = text.select_one('tr:nth-of-type(8) > td').text
+        data['발생장소'] = text.select_one('tr:nth-of-type(9) > td').text
+        data['특징'] = text.select_one('tr:nth-of-type(10) > td').text
+        data['공고기한'] = text.select_one('tr:nth-of-type(11) > td').text
+        data['보호센터이름'] = text.select_one('tr:nth-of-type(13) > td').text
+        data['전화번호'] = text.select_one('tr:nth-of-type(13) > td:nth-of-type(2)').text
+        data['보호장소'] = text.select_one('tr:nth-of-type(14) > td').text
         data['image'] = dom.select_one('img')['src']
-
         data['url'] = url
         data['time'] = datetime.now()
+
+
+        # tmp = tmp[1:21] + tmp[-15:3]
+        #
+        # for i in range(0, len(tmp), 2):
+        #     data[tmp[i].text.strip()] = tmp[i + 1].text.strip()
+        # data['나이'] = data['나이/체중'][:4]
+        # data['체중'] = data['나이/체중'][11:]
+        # del data['나이/체중']
+        #
+        # # DB에 data 유무 확인
+        # if check_data_existence(1, data):
+        #     break
+        #
+        # tmp = dom.select('strong')
+        # data['보호센터이름'] = tmp[0].text
+        # data['보호센터전화번호'] = tmp[1].text
+        # data['보호장소'] = tmp[2].text
+        #
+        # data['image'] = dom.select_one('img')['src']
+        #
+        # data['url'] = url
+        # data['time'] = datetime.now()
 
         result.append(data)
 
@@ -111,8 +141,8 @@ def protect_animals_url1_to_DB(data):
     # DB connect
     curs = conn.cursor()
 
-    sql = '''INSERT INTO protect_animals_url1(number, kind, color, sex, neutralization, date, location, characteristic, deadline, age, weight, center_name, center_number, center_address, image, url, time)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
+    sql = '''INSERT INTO protect_animals_url1(number, kind, color, sex, neutralization, age_weight, date, location, characteristic, deadline, center_name, center_number, center_address, image, url, time)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
 
     # insert data
     [curs.execute(sql, (tuple(_.values()))) for _ in data]
@@ -170,15 +200,21 @@ def protect_animals_url2_scraping(no, n):
     url = 'http://www.zooseyo.or.kr/Yu_board/petcare_view.html'
 
     for num in range(no, no - n, -1):
+        if num % 100 == 0: print(num)
         resp = download(url=url, params={'no': num}, method='GET')
         dom = BeautifulSoup(resp.text, 'html.parser')
 
         data = dict()
         # 찾은 동물 & 존재하지 않는 num pass
         if not re.findall(r'pet_find_phoneblind_img', resp.text) and r'존재하지 않는 게시물입니다.' not in resp.text:
-            text = dom.find('td', {'bgcolor' : '#FFFFFF'}) # .select_one('table > tr > td:nth-of-type(2)')
+            text = dom.find('td', {'bgcolor' : '#FFFFFF'})
 
             data['no'] = num
+
+            # 데이터 유무 체크
+            if check_data_existence(2, data):
+                break
+
             data['name'] = text.select_one('table > tr > td:nth-of-type(2)').text
             data['date'] = text.select_one('table > tr > td:nth-of-type(4)').text
             data['phone_num'] = text.select_one('table > tr:nth-of-type(3) tr > td:nth-of-type(2)').text
@@ -267,26 +303,36 @@ def missing_animals_url3_scraping(no, n):
 
 
     for num in range(no, no - n, -1):
+        if num % 100 == 0: print(num)
         resp = download(url=url, params={'no': num}, method='GET')
         dom = BeautifulSoup(resp.text, 'html.parser')
 
         data = dict()
         # 찾은 동물은 pass
         if not re.findall(r'감사합니다\. 찾았어요\!', resp.text):
-            text = dom.select('b')
-
             data['no'] = num
-            data['phone_num'] = '-'.join(re.findall(r'[0-9]{3,4}',text[0].text))
-            data['address'] = text[1].text
-            data['date'] = text[2].text
-            data['sex'] = text[5].text.strip()
-            data['image'] = str(['http://www.zooseyo.or.kr' + _ for _ in
-                             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))])
-            data['text'] = text[6].text.strip().replace('\r\n',' ')
+            # data 유무 확인
+            if check_data_existence(3, data):
+                break
 
+            data['phone_num'] = '-'.join(re.findall(r'[0-9]{3,4}',dom.find('table', {'bgcolor': '#FFFFFF'}).select_one('span > b').text))
 
+            text = dom.select_one('tr:nth-of-type(7) table table')
 
-            result.append(data)
+            data['address'] = text.select_one('tr > td:nth-of-type(2)').text
+            data['date'] = text.select_one('tr > td:nth-of-type(4)').text
+            data['title'] = text.select_one('tr:nth-of-type(3) td:nth-of-type(2) b').text
+            data['sex'] = text.select_one('tr:nth-of-type(3) td:nth-of-type(2) b:nth-of-type(3)').text.strip()
+            data['text'] = text.select_one('tr:nth-of-type(5) b').text.strip()
+            data['url'] = url + '?' + str(num)
+            data['time'] = datetime.now()
+
+            # 이미지 Table 생성 / 이미지 insert
+            [url_to_DB(3, num, 'http://www.zooseyo.or.kr' + _) for _ in
+             set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))]
+
+            if data['address'] != ' ':
+                result.append(data)
 
     print('-' * 10, ' missing_url3 Scraping end  ', '-' * 10)
     return result
@@ -302,8 +348,8 @@ def missing_animals_url3_to_DB(data):
                            db='project', charset='utf8')
     curs = conn.cursor()
 
-    sql = '''INSERT INTO missing_animals_url3(number, phone_num, address, date, sex, image, characteristic)
-            VALUES (%s,%s,%s,%s,%s,%s,%s)'''
+    sql = '''INSERT INTO missing_animals_url3(number, phone_num, address, date, title, sex, text, url, time)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
 
     # insert data
     [curs.execute(sql, (tuple(_.values()))) for _ in data]
@@ -328,9 +374,6 @@ def missing_animals_url3(n):
     # 최근 게시글부터 n개 Scraping
     missing_animals_url3_result = missing_animals_url3_scraping(no, n)
 
-
-    # protect_url2_result = missing_animals_url3_scraping(no, n)
-    #
     print('-' * 10, ' missing_animals_url3 Crawling end ', '-' * 10)
     # to DB
     [print(_) for _ in missing_animals_url3_result]
@@ -346,4 +389,4 @@ if __name__ == '__main__':
     protect_animals_url2(100)
 
     # # '유기견보호센터 실종동물' url의 데이터 수집
-    # missing_animals_url3(30)
+    # missing_animals_url3(1000)
