@@ -63,7 +63,7 @@ CREATE TABLE `missing_animals_url3` (
 	`no` INT NOT NULL AUTO_INCREMENT,
 	`number` INT NOT NULL COMMENT '고유번호',
 	`phone_num` CHAR(13) NOT NULL COMMENT '실종자 전화번호' COLLATE 'utf8mb4_0900_ai_ci',
-	`address` VARCHAR(50) NOT NULL COMMENT '실종된 장소' COLLATE 'utf8mb4_0900_ai_ci',
+	`address` VARCHAR(100) NOT NULL COMMENT '실종된 장소' COLLATE 'utf8mb4_0900_ai_ci',
 	`date` VARCHAR(100) NOT NULL COMMENT '실종된 날짜' COLLATE 'utf8mb4_0900_ai_ci',
 	`title` MEDIUMTEXT NOT NULL COMMENT '글 제목' COLLATE 'utf8mb4_0900_ai_ci',
 	`sex` VARCHAR(10) NOT NULL COMMENT '성별' COLLATE 'utf8mb4_0900_ai_ci',
