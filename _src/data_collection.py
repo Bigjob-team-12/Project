@@ -25,7 +25,15 @@ def download(url, params={}, method='GET', headers={'user-agent': 'Mozilla/5.0 (
 
     return resp
 
-def url_to_DB(url_num, num, image):
+def image_to_DB(url_num, num, image):
+    '''
+    image to DB
+    DB 정규화 유지
+    :param url_num:
+    :param num:
+    :param image:
+    :return:
+    '''
     curs = conn.cursor()
 
     sql = '''INSERT INTO url(url_num, num, image)
@@ -36,9 +44,10 @@ def url_to_DB(url_num, num, image):
     conn.commit()
 def check_data_existence(url_num, data):
     '''
-    해당 data 유무 check
-    :param data:
-    :return: 데이터 유무 : 1 or 0
+    DB에 해당 data 유무 체크
+    :param url_num:
+    :param data: data 고유번호
+    :return: 1 or 0 
     '''
     curs = conn.cursor()
 
@@ -66,7 +75,7 @@ def protect_animals_url1_to_urllist(url, page_range):
     for page in page_range:
         print(page)
         resp = download(url=url, params={'page': page}, method='GET')
-        [urllist.append(url.replace('list', 'view') + '?' + _) for _ in
+        [urllist.append(url.replace('list', 'view') + '?' + _.split('\'')[0]) for _ in
          re.findall(r'na_open_window\(\'win\', \'abandonment_view_api.php\?([^\"]+)', resp.text)]
 
     print('-' * 10, ' protect_url1 Crawling end  ', '-' * 10)
@@ -88,6 +97,10 @@ def protect_animals_url1_scraping(urllist):
         text = dom.find('table', class_ = 'viewTable')
 
         data['공고번호'] = text.select_one('tr:nth-of-type(2) td').text
+
+        if check_data_existence(1, data):
+            break
+
         data['품종'] = text.select_one('tr:nth-of-type(3) > td').text
         data['색상'] = text.select_one('tr:nth-of-type(4) > td').text
         data['성별'] = text.select_one('tr:nth-of-type(5) > td').text
@@ -105,27 +118,6 @@ def protect_animals_url1_scraping(urllist):
         data['time'] = datetime.now()
 
 
-        # tmp = tmp[1:21] + tmp[-15:3]
-        #
-        # for i in range(0, len(tmp), 2):
-        #     data[tmp[i].text.strip()] = tmp[i + 1].text.strip()
-        # data['나이'] = data['나이/체중'][:4]
-        # data['체중'] = data['나이/체중'][11:]
-        # del data['나이/체중']
-        #
-        # # DB에 data 유무 확인
-        # if check_data_existence(1, data):
-        #     break
-        #
-        # tmp = dom.select('strong')
-        # data['보호센터이름'] = tmp[0].text
-        # data['보호센터전화번호'] = tmp[1].text
-        # data['보호장소'] = tmp[2].text
-        #
-        # data['image'] = dom.select_one('img')['src']
-        #
-        # data['url'] = url
-        # data['time'] = datetime.now()
 
         result.append(data)
 
@@ -226,7 +218,7 @@ def protect_animals_url2_scraping(no, n):
             data['time'] = datetime.now()
 
             # 이미지 Table 생성 / 이미지 insert
-            [url_to_DB(2, num, 'http://www.zooseyo.or.kr' + _['src']) for _ in text.select('table > tr:nth-of-type(11) img')]
+            [image_to_DB(2, num, 'http://www.zooseyo.or.kr' + _['src']) for _ in text.select('table > tr:nth-of-type(11) img')]
 
             result.append(data)
 
@@ -328,7 +320,7 @@ def missing_animals_url3_scraping(no, n):
             data['time'] = datetime.now()
 
             # 이미지 Table 생성 / 이미지 insert
-            [url_to_DB(3, num, 'http://www.zooseyo.or.kr' + _) for _ in
+            [image_to_DB(3, num, 'http://www.zooseyo.or.kr' + _) for _ in
              set(re.findall(r'\/pet_care\/photo\/[0-9_]+.jpe?g', resp.text))]
 
             if data['address'] != ' ':
@@ -382,11 +374,11 @@ def missing_animals_url3(n):
     missing_animals_url3_to_DB(missing_animals_url3_result)
 
 if __name__ == '__main__':
-    # # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
-    # protect_animals_url1(page = 10)
+    # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
+    protect_animals_url1(page = 50)
 
     # '유기견보호센터 유기동물 보호중' url의 데이터 수집
     protect_animals_url2(100)
 
-    # # '유기견보호센터 실종동물' url의 데이터 수집
-    # missing_animals_url3(1000)
+    # '유기견보호센터 실종동물' url의 데이터 수집
+    missing_animals_url3(100)
