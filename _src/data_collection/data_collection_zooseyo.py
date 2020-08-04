@@ -99,7 +99,7 @@ def protect_animals_url1_scraping(urllist):
         data['공고번호'] = text.select_one('tr:nth-of-type(2) td').text
 
         if check_data_existence(1, data):
-            break
+            continue
 
         data['품종'] = text.select_one('tr:nth-of-type(3) > td').text
         data['색상'] = text.select_one('tr:nth-of-type(4) > td').text
@@ -375,7 +375,7 @@ def missing_animals_url3(n):
 
 if __name__ == '__main__':
     # '동물보호관리시스템 유기동물 공고' url의 데이터 수집
-    protect_animals_url1(page = 50)
+    protect_animals_url1(page = 100)
 
     # '유기견보호센터 유기동물 보호중' url의 데이터 수집
     protect_animals_url2(100)
