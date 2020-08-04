@@ -1,0 +1,127 @@
+Classification subject: dog_breeds There were 124 errors in 1214 tests for an accuracy of  89.79     using a Large model
+  2          CLASS                     FILENAME
+  3          17_PUG                    169.jpg
+  4          17_PUG                    170.jpg
+  5          17_PUG                    201.jpg
+  6          17_PUG                    117.jpg
+  7          17_PUG                    216.jpg
+  8          17_PUG                    210.jpg
+  9          17_PUG                    165.jpg
+ 10          17_PUG                    140.jpg
+ 11          17_PUG                    198.jpg
+ 12          17_PUG                    190.jpg
+ 13          17_PUG                    181.jpg
+ 14          17_PUG                    137.jpg
+ 15          17_PUG                    193.jpg
+ 16          17_PUG                    179.jpg
+ 17          17_PUG                    157.jpg
+ 18          17_PUG                    168.jpg
+ 19          17_PUG                    207.jpg
+ 20          17_PUG                    164.jpg
+ 21          17_PUG                    132.jpg
+ 22         X_HUSKY                     79.jpg
+ 23         X_HUSKY                     90.jpg
+ 24         X_HUSKY                     85.jpg
+ 25         X_HUSKY                     96.jpg
+ 26         X_HUSKY                     61.jpg
+ 27 24_CAVALIER_COCKER_SPANIEL            72.jpg
+ 28  19_GERMAN_SHEPHERD_DOG             99.jpg
+ 29  19_GERMAN_SHEPHERD_DOG             82.jpg
+ 30  19_GERMAN_SHEPHERD_DOG             94.jpg
+ 31  19_GERMAN_SHEPHERD_DOG             56.jpg
+ 32  19_GERMAN_SHEPHERD_DOG             64.jpg
+ 33       26_PEKINGESE                  59.jpg
+ 34       26_PEKINGESE                  72.jpg
+ 35       26_PEKINGESE                  65.jpg
+35       26_PEKINGESE                  65.jpg
+ 36       26_PEKINGESE                  66.jpg
+ 37       26_PEKINGESE                  90.jpg
+ 38       26_PEKINGESE                  76.jpg
+ 39       26_PEKINGESE                  50.jpg        
+ 40       26_PEKINGESE                  92.jpg
+ 41       26_PEKINGESE                  69.jpg 
+ 42   9_ITALIAN_GREY_HOUND              14.jpg
+ 43   9_ITALIAN_GREY_HOUND              16.jpg
+ 44   9_ITALIAN_GREY_HOUND              33.jpg
+ 45   9_ITALIAN_GREY_HOUND              46.jpg
+ 46   9_ITALIAN_GREY_HOUND              31.jpg
+ 47   9_ITALIAN_GREY_HOUND              39.jpg
+ 48   9_ITALIAN_GREY_HOUND              37.jpg
+ 49   9_ITALIAN_GREY_HOUND              57.jpg
+ 50   9_ITALIAN_GREY_HOUND              38.jpg
+ 51   9_ITALIAN_GREY_HOUND              24.jpg
+ 52   9_ITALIAN_GREY_HOUND              15.jpg
+ 53        11_BULLDOG                   72.jpg
+ 54        11_BULLDOG                   35.jpg
+ 55        11_BULLDOG                   78.jpg
+ 56        11_BULLDOG                   77.jpg
+ 57        11_BULLDOG                   30.jpg
+ 58        11_BULLDOG                   47.jpg
+ 59        11_BULLDOG                   31.jpg
+ 60        11_BULLDOG                   11.jpg
+ 61        11_BULLDOG                   56.jpg
+ 62        11_BULLDOG                   51.jpg
+ 63        11_BULLDOG                   57.jpg
+ 64        11_BULLDOG                   62.jpg
+ 65        11_BULLDOG                   55.jpg
+ 66        30_SAMOYED                   79.jpg  
+ 67        30_SAMOYED                   68.jpg
+ 68  18_BEDLINGTON_TERRIER              30.jpg
+ 69  18_BEDLINGTON_TERRIER              11.jpg
+ 70  18_BEDLINGTON_TERRIER              21.jpg
+ 71  18_BEDLINGTON_TERRIER              19.jpg
+ 72  18_BEDLINGTON_TERRIER              34.jpg
+ 73       21_CHOW_CHOW                  59.jpg
+ 74       21_CHOW_CHOW                  39.jpg
+ 75       21_CHOW_CHOW                  19.jpg
+76    28_STANDARD_POODLE               23.jpg
+ 77    28_STANDARD_POODLE               30.jpg
+ 78    28_STANDARD_POODLE               31.jpg
+ 79    28_STANDARD_POODLE               27.jpg
+ 80    28_STANDARD_POODLE               39.jpg
+ 81    28_STANDARD_POODLE               50.jpg
+ 82    28_STANDARD_POODLE               53.jpg
+ 83   12_SHETLAND_SHEEPDOG              22.jpg
+ 84   12_SHETLAND_SHEEPDOG              24.jpg
+ 85 23_AMERICAN_COCKER_SPANIEL            67.jpg
+ 86 23_AMERICAN_COCKER_SPANIEL            84.jpg
+ 87 23_AMERICAN_COCKER_SPANIEL            44.jpg
+ 88 23_AMERICAN_COCKER_SPANIEL            65.jpg
+ 89 23_AMERICAN_COCKER_SPANIEL            77.jpg
+ 90 23_AMERICAN_COCKER_SPANIEL            85.jpg
+ 91 23_AMERICAN_COCKER_SPANIEL            54.jpg
+ 92 23_AMERICAN_COCKER_SPANIEL            87.jpg
+ 93 23_AMERICAN_COCKER_SPANIEL            27.jpg
+ 94 23_AMERICAN_COCKER_SPANIEL            62.jpg
+ 95 23_AMERICAN_COCKER_SPANIEL            89.jpg
+ 96 23_AMERICAN_COCKER_SPANIEL            9.jpg
+ 97 23_AMERICAN_COCKER_SPANIEL            15.jpg
+ 98 23_AMERICAN_COCKER_SPANIEL            61.jpg
+ 99   14_GOLDEN_RETRIEVER               72.jpg
+100   14_GOLDEN_RETRIEVER               75.jpg
+101   14_GOLDEN_RETRIEVER               88.jpg
+102   14_GOLDEN_RETRIEVER              100.jpg
+103   14_GOLDEN_RETRIEVER               83.jpg
+104   14_GOLDEN_RETRIEVER               55.jpg
+105   14_GOLDEN_RETRIEVER              107.jpg
+106      15_ROTTWEILER                  31.jpg
+107      15_ROTTWEILER                  9.jpg
+108      15_ROTTWEILER                  15.jpg
+109      10_WELSH_CORGI                 33.jpg
+110      10_WELSH_CORGI                 30.jpg
+111      10_WELSH_CORGI                 27.jpg
+112      10_WELSH_CORGI                 38.jpg
+113         13_SHIBA                    13.jpg
+114         13_SHIBA                    17.jpg
+115         13_SHIBA                    29.jpg
+116         13_SHIBA                    27.jpg
+117         13_SHIBA                    38.jpg
+118   29_YORKSHIRE_TERRIER             105.jpg
+119   29_YORKSHIRE_TERRIER              78.jpg
+120   29_YORKSHIRE_TERRIER             103.jpg
+121   29_YORKSHIRE_TERRIER              91.jpg
+122   29_YORKSHIRE_TERRIER             130.jpg
+123   29_YORKSHIRE_TERRIER             142.jpg
+124   29_YORKSHIRE_TERRIER             100.jpg
+125   29_YORKSHIRE_TERRIER             126.jpg
+126   29_YORKSHIRE_TERRIER             133.jpg
