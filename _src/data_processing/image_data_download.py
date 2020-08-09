@@ -17,8 +17,6 @@ def download_image(images):
     path = '../../_db/data/'
 
     for url, number, class_name in images:
-        print(number)
-
         dog_cat, *class_name = class_name.split()
 
         tmp_path = path + dog_cat
@@ -31,8 +29,12 @@ def download_image(images):
         tmp_path = tmp_path + '/' + class_name
         if not os.path.isdir(tmp_path):
             os.mkdir(tmp_path)
-            
-        urllib.request.urlretrieve(url, tmp_path + '/' + number + ".jpg")
+
+        try:
+            print(class_name + '_' + number)
+            urllib.request.urlretrieve(url, tmp_path + '/' + class_name + '_' + number + ".jpg")
+        except:
+            print('download error : ' + number)
 
 if __name__ == '__main__':
     images = load_image()
