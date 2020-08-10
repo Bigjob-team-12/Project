@@ -371,8 +371,8 @@ dir_name = os.path.join('./model',name)
 if not os.path.isdir(dir_name):
     os.mkdir(dir_name)
 #record every run
-copyfile('./train.py', dir_name+'/train.py')
-copyfile('./model.py', dir_name+'/model.py')
+copyfile('train.py', dir_name + '/train.py')
+copyfile('model.py', dir_name + '/model.py')
 
 # save opts
 with open('%s/opts.yaml'%dir_name,'w') as fp:
