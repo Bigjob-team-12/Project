@@ -89,9 +89,8 @@ def get_steps(test_data):
     t_batch_size=batches[0]
     t_steps=length/t_batch_size
     return t_steps, t_batch_size
-def make_model(class_list, rand_seed, lr_factor):
+def make_model(class_list, rand_seed):
     size = len(class_list)
-    check_file = os.path.join(output_dir, 'tmp.h5')
     mobile = tf.keras.applications.mobilenet.MobileNet()
     # remove last 5 layers of model and add dense layer with 128 nodes and the prediction layer with size nodes
     # where size=number of classes
@@ -198,11 +197,11 @@ def save_predicted_value_as_csv(predict, test_labels, test_files, class_list):
 
     result.head()
     result.to_csv(output_dir + '/result.csv')
-def TF2_classify(source_dir,output_dir,subject, lr_factor=.8,image_size=224,rand_seed=128):
+def TF2_classify(source_dir,output_dir,subject, image_size=224,rand_seed=128):
     # load test data
     test_data, test_labels, test_files, class_list = get_data_sets(source_dir,image_size)
     t_steps, t_batch_size = get_steps(test_data)
-    model=make_model(class_list, rand_seed,lr_factor)
+    model=make_model(class_list, rand_seed)
     test_gen=make_generators(test_data, test_labels,t_batch_size)
     predict=make_predictions(output_dir, test_gen, t_steps,model)
     accuracy=display_pred(output_dir,predict[0],test_files,test_labels,class_list, subject)
@@ -216,4 +215,4 @@ if __name__ == '__main__':
     image_size=224
     rand_seed=256
 
-    TF2_classify(source_dir,output_dir,subject, image_size=image_size,rand_seed=rand_seed)
+    TF2_classify(source_dir,output_dir,subject,image_size=image_size,rand_seed=rand_seed)
