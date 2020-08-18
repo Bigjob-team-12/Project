@@ -1,17 +1,17 @@
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.layers import Dense, Dropout
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras import regularizers
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Model
 import numpy as np
 from PIL import Image
 import cv2
 import os
-from dog_breed_similarity_comparison import read_data, cos_sim, draw_plot, init_font
+from model_testing_with_real_data import get_steps, make_generators, make_model, make_predictions
+from dog_breed_similarity_comparison import init_font, load_data, cos_sim, draw_plot
 
 def get_data_sets(dir, image_size):
+    '''
+    load image data
+    :param dir: input image directory
+    :param image_size:
+    :return: image, file name
+    '''
     data = []
     files = []
     dir_lists = os.listdir(dir)
@@ -19,76 +19,68 @@ def get_data_sets(dir, image_size):
     for image_dir in dir_lists:
         file_path = os.path.join(dir, image_dir)
         if os.path.isfile(file_path):
+            # 한글 directory 오류 방지
             ff = np.fromfile(file_path, np.uint8)
             img = cv2.imdecode(ff, cv2.IMREAD_UNCHANGED)
-
             image_array = Image.fromarray(img, 'RGB')
+            data.append(np.array(image_array.resize((image_size, image_size))))
 
-            resize_img = image_array.resize((image_size, image_size))
-
-            data.append(np.array(resize_img))
             files.append(image_dir)
-    test_data = np.array(data)
-    test_files = np.array(files)
 
-    return test_data, test_files
-def get_steps(test_data):
-    length=test_data.shape[0]
-    batches=[int(length/n) for n in range(1,length+1) if length % n ==0 and length/n<=80]
-    batches.sort(reverse=True)
-    t_batch_size=batches[0]
-    t_steps=length/t_batch_size
-    return t_steps, t_batch_size
-def make_model(rand_seed):
-    size = 20
-    mobile = tf.keras.applications.mobilenet.MobileNet()
-    # remove last 5 layers of model and add dense layer with 128 nodes and the prediction layer with size nodes
-    # where size=number of classes
-    x = mobile.layers[-6].output
-    x = Dense(128, kernel_regularizer=regularizers.l2(l=0.015), activation='relu')(x)
-    x = Dropout(rate=.5, seed=rand_seed)(x)
-    predictions = Dense(size, activation='softmax')(x)
-    model = Model(inputs=mobile.input, outputs=predictions)
-    for layer in model.layers:
-        layer.trainable = True
-    model.compile(Adam(lr=0.0015), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    return np.array(data), np.array(files)
+def compare_similarities_and_show_results(predict, image_path, location, n=10):
+    '''
+    유사도 비교 후 높은 순으로 10개 보여주기
+    :param predict: softmax 확률값
+    :param image_path:
+    :param n: 보여줄 image 갯수
+    :return: None
+    '''
+    # data = load_data().reset_index()
+    # data = data[data['file_name'].apply(lambda x : True if location in x else False)].set_index('file_name')
 
-    return model
-def make_generators(test_data, t_batch_size):
-    test_datagen=ImageDataGenerator(preprocessing_function=keras.applications.mobilenet.preprocess_input,
-                                    samplewise_center=True,
-                                    samplewise_std_normalization=True)
-    test_gen=test_datagen.flow(test_data, batch_size=t_batch_size, shuffle=False)
+    data = load_data()
 
-    return test_gen
-def make_predictions(output_dir, test_gen, t_steps, model):
-    # the best model was saved as a file need to read it in and load it since it is not available otherwise
-    test_gen.reset()
-    model_path=os.path.join(output_dir,'tmp.h5')
-    model.load_weights(model_path)
-    pred=model.predict_generator(test_gen, steps=t_steps,verbose=1) # make predictions on the test set
-    return [pred, model]
-def compare_similarities_and_show_results(predict, n=10):
-    data = read_data()
-    file_list = data.apply(lambda x: cos_sim(x, predict[0][0]), axis=1).sort_values(ascending=False).index[:100]
-    image_path = '../../../_db/data/model_data/input/dog_data/ours_dog/test'
+    file_list = data.apply(lambda x: cos_sim(x, predict[0]), axis=1).sort_values(ascending=False).index
+
+    # print(file_list)
+
     img_lst = []
     for i in file_list:
         img_lst.append(Image.open(os.path.join(image_path, i)))
     init_font()
     draw_plot(file_list[:n], img_lst[:n])
-def TF2_classify(source_dir,output_dir,image_size=224,rand_seed=128):
+def show_similar_images(source_dir,output_dir,image_path, location,image_size=224,rand_seed=128):
+    '''
+    입력한 이미지와 저장되어 있는 공고 데이터와의 유사도 비교 후 10개 보여주기
+    :param source_dir: input image directory
+    :param output_dir: model and softmax data directory
+    :param image_path: 저장되어 있는 image directory
+    :param image_size:
+    :param rand_seed:
+    :return: None
+    '''
+    # load one image
     test_data, test_files = get_data_sets(source_dir,image_size)
     t_steps, t_batch_size = get_steps(test_data)
-    model=make_model(rand_seed)
-    test_gen=make_generators(test_data, t_batch_size)
-    predict=make_predictions(output_dir, test_gen, t_steps,model)
-    compare_similarities_and_show_results(predict)
+    test_gen = make_generators(test_data, t_batch_size)
+
+    # init model
+    model = make_model(rand_seed)
+    # predcit
+    predict = make_predictions(output_dir, test_gen, t_steps, model)
+    
+    # 유사한 image 보여주기
+    compare_similarities_and_show_results(predict, image_path, location)
 
 if __name__ == '__main__':
     source_dir='../../../_db/data/model_data/test'
     output_dir='../../../_db/data/model_data/working'
+    image_path = '../../../_db/data/model_data/input/dog_data/ours_dog/test'
+    location = '경북'
+
     image_size=224
     rand_seed=256
 
-    TF2_classify(source_dir,output_dir,image_size=image_size,rand_seed=rand_seed)
+
+    show_similar_images(source_dir,output_dir,image_path,location,image_size=image_size,rand_seed=rand_seed)
