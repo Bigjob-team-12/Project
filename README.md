@@ -32,9 +32,14 @@
 - **`200727-200731`**
   - 수집된 데이터 EDA
 - **`200803-200807`**
+  - Data preprocessing code 작성 
+    - File renaming & random shuffle, Cross validation, Image Augmentation 
+  - pet re-identification
+    - person re identification 응용 (https://github.com/waylybaye/Person_reID_baseline_pytorch#dataset--preparation)
   - 개 품종 분류 및 결과 EDA
 - **`200810-200814`**
   - 분류 모델 softmax값을 이용한 cosine 유사도 측정
   - 임의의 이미지에 대해 공고 이미지와 유사도 측정 후 유사한 이미지 N개 출력
 - **`200817-200821`**
   - 웹 디자인 구상
+  - Object detection & Image crop하는 code 작성 (faster R-CNN)   
