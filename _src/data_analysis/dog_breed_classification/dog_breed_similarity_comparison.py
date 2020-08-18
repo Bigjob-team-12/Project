@@ -6,6 +6,8 @@ from numpy.linalg import norm
 import platform
 from matplotlib import font_manager, rc
 import matplotlib.pyplot as plt
+from scipy.spatial import distance
+from scipy.stats import pearsonr
 
 def init_font():
     '''
@@ -32,7 +34,19 @@ def load_data():
     print(data.head(2))
 
     return data
-def load_similar_images(file_name, path):
+def cos_sim(A, B):
+    '''
+    A,B의 cosine similarity
+    :param A:
+    :param B:
+    :return: A,B의 cosine similarity
+    '''
+    return dot(A, B) / (norm(A) * norm(B))
+def euc_sim(A, B):
+    return distance.euclidean(A, B)
+def pearson(A, B):
+    return pearsonr(A, B)
+def load_similar_images(file_name, path, func = cos_sim):
     '''
     input image와 유사한 image 10개 추출
     :param file_name:
@@ -40,7 +54,7 @@ def load_similar_images(file_name, path):
     :return: file list, image list
     '''
     # input image와 cosine 유사도가 높은 10개의 file list
-    file_lst = data.apply(lambda x: cos_sim(x, data.loc[file_name]), axis=1).sort_values(ascending=False)[:11].index
+    file_lst = data.apply(lambda x: func(x, data.loc[file_name]), axis=1).sort_values(ascending=False)[:11].index
     # file list의 image 불러오기
     img_lst = []
     for i in file_lst:
@@ -68,14 +82,7 @@ def draw_plot(file_lst, img_lst):
         plt.imshow(img_lst[a])
     fig.tight_layout()
     plt.show()
-def cos_sim(A, B):
-    '''
-    A,B의 cosine similarity
-    :param A:
-    :param B:
-    :return: A,B의 cosine similarity
-    '''
-    return dot(A, B) / (norm(A) * norm(B))
+
 
 if __name__ == '__main__':
     # 한글 깨짐 방지
@@ -86,6 +93,6 @@ if __name__ == '__main__':
     path = '../../../_db/data/model_data/input/dog_data/ours_dog/test'
     file_name = '14_GOLDEN_RETRIEVER/골든_리트리버_경기-용인-2020-00463.jpg'
     # input image와 cosine 유사도가 높은 10개의 file, image 추출
-    file_lst, img_lst = load_similar_images(file_name, path)
+    file_lst, img_lst = load_similar_images(file_name, path, pearson)
     # 10개의 data 보여주기
     draw_plot(file_lst, img_lst)
