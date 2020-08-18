@@ -3,7 +3,7 @@ from PIL import Image
 import cv2
 import os
 from model_testing_with_real_data import get_steps, make_generators, make_model, make_predictions
-from dog_breed_similarity_comparison import init_font, load_data, cos_sim, draw_plot
+from dog_breed_similarity_comparison import init_font, load_data, cos_sim, euc_sim, pearson, draw_plot
 
 def get_data_sets(dir, image_size):
     '''
@@ -28,7 +28,7 @@ def get_data_sets(dir, image_size):
             files.append(image_dir)
 
     return np.array(data), np.array(files)
-def compare_similarities_and_show_results(predict, image_path, location, n=10):
+def compare_similarities_and_show_results(predict, image_path, location, sim_func = cos_sim, n=10):
     '''
     유사도 비교 후 높은 순으로 10개 보여주기
     :param predict: softmax 확률값
@@ -41,9 +41,7 @@ def compare_similarities_and_show_results(predict, image_path, location, n=10):
 
     data = load_data()
 
-    file_list = data.apply(lambda x: cos_sim(x, predict[0]), axis=1).sort_values(ascending=False).index
-
-    # print(file_list)
+    file_list = data.apply(lambda x: sim_func(x, predict[0]), axis=1).sort_values(ascending=False).index
 
     img_lst = []
     for i in file_list:
@@ -71,7 +69,7 @@ def show_similar_images(source_dir,output_dir,image_path, location,image_size=22
     predict = make_predictions(output_dir, test_gen, t_steps, model)
     
     # 유사한 image 보여주기
-    compare_similarities_and_show_results(predict, image_path, location)
+    compare_similarities_and_show_results(predict, image_path, location, sim_func = pearson)
 
 if __name__ == '__main__':
     source_dir='../../../_db/data/model_data/test'
@@ -81,6 +79,5 @@ if __name__ == '__main__':
 
     image_size=224
     rand_seed=256
-
 
     show_similar_images(source_dir,output_dir,image_path,location,image_size=image_size,rand_seed=rand_seed)
