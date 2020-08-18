@@ -35,7 +35,7 @@
   - Data preprocessing code 작성 
     - File renaming & random shuffle, Cross validation, Image Augmentation 
   - pet re-identification
-    - person re identification 응용 (https://github.com/waylybaye/Person_reID_baseline_pytorch#dataset--preparation)
+    - [person re identification](https://github.com/waylybaye/Person_reID_baseline_pytorch#dataset--preparation) 응용 
   - 개 품종 분류 및 결과 EDA
 - **`200810-200814`**
   - 분류 모델 softmax값을 이용한 cosine 유사도 측정
