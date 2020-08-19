@@ -16,3 +16,30 @@
   - 기타 고려사항:
     > 눈 색깔, 무늬 형태 등 도메인 특화 피처들의 반영 가능성  
     > 야외 생활로 인한, 유기 기간에 따른 외형적 변화
+
+
+#### 프로젝트 진행 과정
+
+- **`200706-200710`**
+  - 아이디어 회의
+- **`200713-200717`**
+  - 아이디어 회의
+  - 팀별 발표(변리사 & 학생 피드백)
+- **`200720-200724`**
+  - 환경 구축
+  - 데이터 수집
+    - [종합 유기견 보호센터](http://www.zooseyo.or.kr/zooseyo_or_kr.html?) : 유기 동물(공고 & 보호 중)
+- **`200727-200731`**
+  - 수집된 데이터 EDA
+- **`200803-200807`**
+  - Data preprocessing code 작성 
+    - File renaming & random shuffle, Cross validation, Image Augmentation 
+  - pet re-identification
+    - [person re identification](https://github.com/waylybaye/Person_reID_baseline_pytorch#dataset--preparation) 응용 
+  - 개 품종 분류 및 결과 EDA
+- **`200810-200814`**
+  - 분류 모델 softmax값을 이용한 cosine 유사도 측정
+  - 임의의 이미지에 대해 공고 이미지와 유사도 측정 후 유사한 이미지 N개 출력
+- **`200817-200821`**
+  - 웹 디자인 구상
+  - Object detection & Image crop하는 code 작성 (faster R-CNN)   
