@@ -43,7 +43,7 @@ def cos_sim(A, B):
     '''
     return dot(A, B) / (norm(A) * norm(B))
 def euc_sim(A, B):
-    return distance.euclidean(A, B)
+    return -distance.euclidean(A, B)
 def pearson(A, B):
     return pearsonr(A, B)
 def load_similar_images(file_name, path, func = cos_sim):
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     data = load_data()
 
     path = '../../../_db/data/model_data/input/dog_data/ours_dog/test'
-    file_name = '14_GOLDEN_RETRIEVER/골든_리트리버_경기-용인-2020-00463.jpg'
+    file_name = '14_GOLDEN_RETRIEVER/00000.jpg'
     # input image와 cosine 유사도가 높은 10개의 file, image 추출
     file_lst, img_lst = load_similar_images(file_name, path, pearson)
     # 10개의 data 보여주기
