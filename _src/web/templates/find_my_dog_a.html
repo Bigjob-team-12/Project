@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>찾아줘 Cat Dog: 결과 확인</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">찾아주CatDog</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="find_my_q">우리 반려동물 찾기<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">관심 반려동물 찾기</a>
+            </li>
+        </ul>
+        <span class="navbar-text">
+      <a class="nav-link" href="#">About us</a>
+    </span>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+<!-- 사용자 요청 정보 -->
+<div class="container">
+    <div class="col-auto">
+        <h4><img class="query-image" src="{{ url_for('static', filename=asked[5]) }}" height="100"> {{ asked[2] }} / {{ asked[3] }} </h4>
+    </div>
+</div>
+
+<!-- 결과 데이터 2행 5열 노출 -->
+<div class="container">
+    <div class="row">
+        {% for _ in found[0:5] %}
+            <div class="col">
+                <div class="card">
+                    <img src="{{ _[10] }}" class="card-img-top" >
+                    <div class="card-body">
+                        <h6 class="card-title">{{ _[1] }}</h6>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row">지역</th>
+                                <td>{{ _[8] }}</td><!-- .split(' ')[:3] -->
+                            </tr>
+                            <tr>
+                                <th scope="row">몸무게</th>
+                                <td>{{ _[6].split('_')[-1] }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">발견일</th>
+                                <td>{{ _[7] }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">공고 만료</th>
+                                <td>{{ _[9].split(' ')[-1] }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <a href="{{ _[11] }}" class="btn btn-light">자세히 보기</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        {% for _ in found[5:] %}
+            <div class="col">
+                <div class="card">
+                    <img src="{{ _[10] }}" class="card-img-top" style="max-width: 100%; height: auto;">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ _[1] }}</h6>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row">지역</th>
+                                <td>{{ _[8] }}</td><!-- .split(' ')[:3] -->
+                            </tr>
+                            <tr>
+                                <th scope="row">몸무게</th>
+                                <td>{{ _[6].split('_')[-1] }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">발견일</th>
+                                <td>{{ _[7] }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">공고 만료</th>
+                                <td>{{ _[9].split(' ')[-1] }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <a href="{{ _[11] }}" class="btn btn-light">자세히 보기</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 페이징: 작업중 -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if page == 1 %} disabled {% endif %}">
+            <a class="page-link" href="#" tabindex="-1" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
+        <li class="page-item {% if page == 20 %} disabled {% endif %}">
+            <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>
