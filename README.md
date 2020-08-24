@@ -43,3 +43,7 @@
 - **`200817-200821`**
   - 웹 디자인 구상
   - Object detection & Image crop하는 code 작성 (faster R-CNN)   
+- **`200824-200828`**
+  - flow diagram 작성
+  - Demo 용 웹 페이지 생성(flask, DB 연동)
+  - 분류기와 re-id 
