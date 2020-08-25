@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>찾아줘 Cat Dog: 결과 확인</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">찾아주CatDog</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="find_my_q">우리 반려동물 찾기<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">관심 반려동물 찾기</a>
+            </li>
+        </ul>
+        <span class="navbar-text">
+      <a class="nav-link" href="#">About us</a>
+    </span>
+    </div>
+</nav>
+
+<!-- 사용자 요청 정보 -->
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-auto">
+            <h4><img class="query-image" src="{{ url_for('static', filename=asked[5]) }}" height="100"/> {{ asked[2] }}
+                / {{ asked[3] }}</h4>
+        </div>
+        <!-- 이메일 푸시 알림 신청: 작업중 -->
+        <div class="col-auto">
+            <form class="form-inline">
+                <div class="input-group mb-2 mr-sm-2">
+                    <input type="text" class="form-control" name="id" placeholder="example">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@</div>
+                    </div>
+                    <input type="text" class="form-control" name="domain" placeholder="naver.com">
+                </div>
+                <button type="submit" class="btn btn-outline-info mb-2" disabled>이메일 푸시 알림 신청</button>
+            </form>
+            <small class="form-text text-muted" style="text-align:right;">이메일 주소는 푸시 알림을 위해서만 사용되며, 알림 취소 즉시
+                삭제됩니다.</small>
+        </div>
+    </div>
+</div>
+
+<!-- 결과 데이터 10건 노출 -->
+<!-- 붙여서 노출하려면 card-group, 한 줄 5건 고정하려면 card-deck -->
+<div class="container">
+    <div class="card-group">
+        {% for _ in found[0:5] %}
+            <div class="card" style="max-width: 12vw;">
+                <img src="{{ _[14] }}" class="card-img-top"
+                     style="width: auto; height: auto; max-width: 20vw; max-height: 20vh; object-fit: cover;">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _[0] }}</h6>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th scope="row">지역</th>
+                            <td>{{ _[8] }}</td><!-- .split(' ')[:3] -->
+                        </tr>
+                        <tr>
+                            <th scope="row">몸무게</th>
+                            <td>{{ _[6].split('/')[-1][1:] }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">발견일</th>
+                            <td>{{ _[7] }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">공고 만료</th>
+                            <td>{{ _[10].split(' ')[-1] }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <a href="{{ _[15] }}" class="btn btn-light">자세히 보기</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="card-group">
+        {% for _ in found[5:] %}
+            <div class="card" style="max-width: 12vw;">
+                <img src="{{ _[14] }}" class="card-img-top"
+                     style="width: auto; height: auto; max-width: 20vw; max-height: 20vh; object-fit: cover;">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _[0] }}</h6>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th scope="row">지역</th>
+                            <td>{{ _[8] }}</td><!-- .split(' ')[:3] -->
+                        </tr>
+                        <tr>
+                            <th scope="row">몸무게</th>
+                            <td>{{ _[6].split('/')[-1][1:] }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">발견일</th>
+                            <td>{{ _[7] }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">공고 만료</th>
+                            <td>{{ _[10].split(' ')[-1] }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <a href="{{ _[15] }}" class="btn btn-light">자세히 보기</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- pagination -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if page == 1 %} disabled {% endif %}">
+            <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, page - 1) }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
+        <li class="page-item {% if page == 10 %} disabled {% endif %}">
+            <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, page + 1) }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+</body>
+</html>
