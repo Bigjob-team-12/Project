@@ -13,7 +13,7 @@ import numpy as np
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
 import os
-import time
+
 flags.DEFINE_string('framework', 'tf', '(tf, tflite, trt')
 flags.DEFINE_string('weights', './checkpoints/yolov4-416',
                     'path to weights file')
@@ -25,27 +25,16 @@ flags.DEFINE_string('output', 'result.png', 'path to output image')
 flags.DEFINE_float('iou', 0.45, 'iou threshold')
 flags.DEFINE_float('score', 0.25, 'score threshold')
 
-def main(img_path,model_load):
-    # path_file = FLAGS.path_file
-    #
-    # for count, foldername in enumerate(os.listdir(path_file)):
-    #     print(count, foldername)
-    #     for count, filename in enumerate(os.listdir(path_file + '/' + foldername)):
-    #         print(count, filename)
-    #         dst_name = filename.split('/')[-1].split('.jpg')[0] + '_crop' + '.jpg'
-    #         path_src_file = path_file + '/' + foldername + '/' + filename
-    #         path_dst_file = path_file + '/' + foldername + '/' + dst_name
-    #         print(path_src_file)
+def main(img_path,saved_model_loaded):
 
     config = ConfigProto()
     #config.gpu_options.per_process_gpu_memory_fraction = 0.4
     #session = InteractiveSession(config=config)
     config.gpu_options.allow_growth = True
     session = InteractiveSession(config=config)
-
-
     #STRIDES, ANCHORS, NUM_CLASS, XYSCALE = utils.load_config(FLAGS)
 
+    ###### option setting ######
     input_size = 416
     image_path = img_path
     print(image_path)
@@ -55,37 +44,17 @@ def main(img_path,model_load):
     iou = 0.45
     score = 0.25
 
-    # image_data = utils.image_preprocess(np.copy(original_image), [input_size, input_size])
+    ###### data processing ######
     image_data = cv2.resize(original_image, (input_size, input_size))
     image_data = image_data / 255.
-    # image_data = image_data[np.newaxis, ...].astype(np.float32)
-
     images_data = []
     for i in range(1):
         images_data.append(image_data)
     images_data = np.asarray(images_data).astype(np.float32)
 
-    # if FLAGS.framework == 'tflite':
-    #     interpreter = tf.lite.Interpreter(model_path=FLAGS.weights)
-    #     interpreter.allocate_tensors()
-    #     input_details = interpreter.get_input_details()
-    #     output_details = interpreter.get_output_details()
-    #     print(input_details)
-    #     print(output_details)
-    #     interpreter.set_tensor(input_details[0]['index'], images_data)
-    #     interpreter.invoke()
-    #     pred = [interpreter.get_tensor(output_details[i]['index']) for i in range(len(output_details))]
-    #     if FLAGS.model == 'yolov3' and FLAGS.tiny == True:
-    #         boxes, pred_conf = filter_boxes(pred[1], pred[0], score_threshold=0.25, input_shape=tf.constant([input_size, input_size]))
-    #     else:
-    #         boxes, pred_conf = filter_boxes(pred[0], pred[1], score_threshold=0.25, input_shape=tf.constant([input_size, input_size]))
-    # else:
-    #start = time.time()
-    #saved_model_loaded = tf.saved_model.load(weights, tags=[tag_constants.SERVING])
-    #saved_model_loaded = model_load
-    #print('model load time = ', time.time() - start)
-
-
+    ###### load model ######
+    # model은 앞에 실행되는 스크립트에서 불러온다. (속도 향상을 위해)
+    saved_model_loaded = saved_model_loaded
     infer = saved_model_loaded.signatures['serving_default']
     batch_data = tf.constant(images_data)
     pred_bbox = infer(batch_data)
@@ -102,19 +71,15 @@ def main(img_path,model_load):
         iou_threshold= iou,
         score_threshold= score
     )
-    # print(boxes.numpy()[0][0])
-    #
-    #print(classes.numpy()[0][0])
-    # error=0
-    pred_bbox = [boxes.numpy(), scores.numpy(), classes.numpy(), valid_detections.numpy()]
-    #rint(pred_bbox)
-    image = utils.draw_bbox_and_crop(original_image, pred_bbox, size=224)
-    #image = utils.draw_bbox(image_data*255, pred_bbox)
-    # if error == 1:
-    #     print('dog 검출 x')
 
+    pred_bbox = [boxes.numpy(), scores.numpy(), classes.numpy(), valid_detections.numpy()]
+    #print(boxes.numpy(), scores.numpy(), classes.numpy())
+
+    # utils.draw_bbox_and_crop 함수는 직접 custom한 함수
+    image = utils.draw_bbox_and_crop(original_image, pred_bbox, size=224)
+    #image = utils.draw_bbox(image_data*255, pred_bbox)   #original 함수
     image = Image.fromarray(image.astype(np.uint8))
-    image.show()
+    #image.show()
     image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
     cv2.imwrite(image_path, image)
 
