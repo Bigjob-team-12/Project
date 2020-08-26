@@ -12,6 +12,12 @@ Download yolov4.weights file: https://drive.google.com/open?id=1cewMfusmPjYWbrnu
 ### Prerequisites
 * Tensorflow 2.2.0rc0 or Tensorflow 2.3.0rc0
 
+### Input 
+<p align="center"><img src="input.png" width="640"\></p>
+
+#### Output
+<p align="center"><img src="output.png" width="640"\></p>
+
 
 ### Demo
 
@@ -30,12 +36,6 @@ python detect.py --weights ./checkpoints/yolov4-tiny-416 --size 416 --model yolo
 
 ```
 
-
-### Input 
-<p align="center"><img src="input.png" width="640"\></p>
-
-#### Output
-<p align="center"><img src="output.png" width="640"\></p>
 
 
 ### Evaluate on COCO 2017 Dataset
