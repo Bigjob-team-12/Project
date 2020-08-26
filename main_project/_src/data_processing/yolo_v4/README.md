@@ -4,13 +4,13 @@
 Download yolov4.weights file: https://drive.google.com/open?id=1cewMfusmPjYWbrnuJRuKhPMwRe_b9PaT
 
 ### Using
-* [x] Detect Dogs or cat
-* [x] Crop pet image and download image
+* [v] Detect Dogs or cat
+* [v] Crop pet image and download image
 - 입력에 들어가는 Query image와 model train에 사용되는 image를 processing하는 용도로 사용.
 - COCO dataset으로 학습된 가중치를 이용, ./core/util.py를 자체 커스텀.
 
 ### Prerequisites
-* Tensorflow 2.2.0rc0 or Tensorflow 2.3.0rc0
+* Tensorflow >= 2.2.0rc0
 
 ### Input 
 <p align="center"><img src="input.jpg" width="640"\></p>
