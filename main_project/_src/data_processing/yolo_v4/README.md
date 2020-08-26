@@ -13,10 +13,10 @@ Download yolov4.weights file: https://drive.google.com/open?id=1cewMfusmPjYWbrnu
 * Tensorflow 2.2.0rc0 or Tensorflow 2.3.0rc0
 
 ### Input 
-<p align="center"><img src="input.png" width="640"\></p>
+<p align="center"><img src="input.jpg" width="640"\></p>
 
 #### Output
-<p align="center"><img src="output.png" width="640"\></p>
+<p align="center"><img src="output.jpg" width="640"\></p>
 
 
 ### Demo
