@@ -138,6 +138,10 @@ def make_predictions(output_dir, test_gen, t_steps, model):
     # load model weight
     model.load_weights(model_path)
     pred=model.predict_generator(test_gen, steps=t_steps,verbose=1) # make predictions on the test set
+
+    del model
+    tf.keras.backend.clear_session()
+
     return pred
 def display_pred(output_dir, pred, t_files, t_labels, class_list):
     # t_files are the test files, t_labels are the class label associated with the test file
@@ -254,7 +258,7 @@ def TF2_classify(source_dir,output_dir,image_size=224,rand_seed=128):
 if __name__ == '__main__':
     # test data directory
     source_dir = '../../../_db/data/Crawling_data/[개]'
-    # source_dir = '../../../_db/data/model_data/input/dog_data/ours_dog/test'
+    # source_dir = '../../../_db/data/input_query/input/dog_data/ours_dog/test'
     # model directory
     output_dir='../../../_db/data/model_data/working'
     image_size=224

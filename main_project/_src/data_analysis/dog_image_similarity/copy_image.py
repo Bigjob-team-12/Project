@@ -1,13 +1,17 @@
 import shutil
 import pandas as pd
 import time
+import sys
+import gc
+import torch
+from numba import cuda
 
-if __name__ == '__main__':
-    data = pd.read_csv('test.csv')
+def main():
+    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_image_similarity/test.csv')
 
-    image_path = '../../../_db/data/crawling_data/post_dog(size_240)/'
+    image_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/Preprocessed_data/'
 
-    copy_path = '../../../_db/data/model_data/pet_re_id_data/'
+    copy_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data/gallery/gallery_list/'
 
     start = time.time()  # 시작 시간 저장
 
@@ -20,6 +24,10 @@ if __name__ == '__main__':
     print(len(data['file_name']))
     print("time :", time.time() - start)
 
-    # shutil.copy(image_path + data['file_name'][0], copy_path + data['file_name'][0].split('/')[-1])
-    #
-    # print(data['file_name'][0].split('/')[-1])
+    gc.collect()
+    sys.stdout.flush()
+    cuda.close()
+    torch.cuda.empty_cache() # PyTorch thing
+
+if __name__ == '__main__':
+    main()

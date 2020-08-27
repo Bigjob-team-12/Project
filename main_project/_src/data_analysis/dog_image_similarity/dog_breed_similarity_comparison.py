@@ -27,7 +27,7 @@ def load_data():
     image별 softmax값 저장된 data 불러오기
     :return: data
     '''
-    data = pd.read_csv('../../../_db/data/model_data/working/result.csv').set_index('file_name').iloc[:, 1:-3]
+    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/result.csv').set_index('file_name').iloc[:, 1:-3]
 
     print('-'*10 + 'data shape and data.head' + '-'*10)
     print(data.shape)
@@ -46,7 +46,7 @@ def euc_sim(A, B):
     return -distance.euclidean(A, B)
 def pearson(A, B):
     return pearsonr(A, B)
-def load_similar_images(file_name, path, func = cos_sim):
+def load_similar_images(data, file_name, path, func = cos_sim):
     '''
     input image와 유사한 image 10개 추출
     :param file_name:
@@ -83,16 +83,24 @@ def draw_plot(file_lst, img_lst):
     fig.tight_layout()
     plt.show()
 
-
-if __name__ == '__main__':
+def main():
     # 한글 깨짐 방지
     init_font()
     # data load
     data = load_data()
 
-    path = '../../../_db/data/model_data/input/dog_data/ours_dog/test'
-    file_name = '14_GOLDEN_RETRIEVER/00000.jpg'
+    path = 'C:/Users/kdan/BigJob12/main_project/_src/web/static/images/input_image/'
+
+    file_name = os.listdir(path)[0]
+
+    # file_name = '14_GOLDEN_RETRIEVER/00000.jpg'
     # input image와 cosine 유사도가 높은 10개의 file, image 추출
-    file_lst, img_lst = load_similar_images(file_name, path, pearson)
-    # 10개의 data 보여주기
-    draw_plot(file_lst, img_lst)
+    file_lst, img_lst = load_similar_images(data, file_name, path, pearson)
+
+    [print(_) for _ in file_lst]
+    # # 10개의 data 보여주기
+    # draw_plot(file_lst, img_lst)
+
+
+if __name__ == '__main__':
+    main()
