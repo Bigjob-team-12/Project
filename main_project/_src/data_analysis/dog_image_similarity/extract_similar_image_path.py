@@ -80,16 +80,15 @@ def compare_similarities_and_show_results(predict, location, date, sim_func = pe
     print('raw data')
     print(data.shape)
     data = data[data.start.apply(lambda x : date > x)]
-
-    data = data[data.end.apply(lambda x: date < x)]
+    # data = data[data.end.apply(lambda x: date < x + 10)]
 
     print()
     print('date filtering')
     print(data.shape)
 
     # 지역 filtering
-    # data = data[data['name'].apply(lambda x : x[:2] in province[location])]
-    data = data[data['name'].apply(lambda x : x[:2] == location)]
+    data = data[data['name'].apply(lambda x : x[:2] in province[location])]
+    # data = data[data['name'].apply(lambda x : x[:2] == location)]
     print()
     print('지역 filtering')
     print(data.shape)

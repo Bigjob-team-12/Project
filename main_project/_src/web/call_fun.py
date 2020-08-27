@@ -4,7 +4,7 @@ sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_imag
 sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/re_id/code')
 
 import extract_similar_image_path, copy_image
-import reid_test# , flush_gpu
+import reid_query, flush_gpu
 from numba import cuda
 
 
@@ -18,4 +18,4 @@ def main(location, date):
     # re_id를 이용한 유사한 이미지 추출
     device = cuda.get_current_device()
     device.reset()
-    reid_test.main()
+    reid_query.main()

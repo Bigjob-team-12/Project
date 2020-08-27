@@ -51,7 +51,9 @@ def download_image(images):
             # download image
             print(class_name + '_' + number)
             # file 존재할 경우 break
-            if os.path.isfile(image_path + '/' + class_name + '/' + class_name + '_' + number + ".jpg"): break
+            if os.path.isfile(image_path + '/' + class_name + '/' + class_name + '_' + number + ".jpg"):
+                print('해당 파일 존재')
+                break
             else: urllib.request.urlretrieve(url, tmp_path + '/' + class_name + '_' + number + ".jpg")
 
         except:

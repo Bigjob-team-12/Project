@@ -1,6 +1,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask_dropzone import Dropzone
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
@@ -13,6 +14,7 @@ import re
 import sys
 import shutil
 import call_fun
+from werkzeug.datastructures import ImmutableMultiDict
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 upload_dir = os.path.join(basedir, 'static/images/uploads')
@@ -22,8 +24,21 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:bigjob12@localhost:3306/project"
 app.config['SECRET_KEY'] = 'cat'
 app.config['UPLOADED_PATH'] = upload_dir
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 ##################################################################
+app.config['DROPZONE_ALLOWED_FILE_TYPE'] = 'image'
+app.config['DROPZONE_MAX_FILES'] = 1
+app.config['DROPZONE_IN_FORM'] = True
+app.config['DROPZONE_UPLOAD_ON_CLICK'] = True
+app.config['DROPZONE_UPLOAD_ACTION'] = 'ask'
+app.config['DROPZONE_UPLOAD_BTN_ID'] = 'submit'
+app.config['DROPZONE_DEFAULT_MESSAGE'] = '사진 업로드: 클릭하거나 파일을 드래그해주세요.'
+##################################################################
+dropzone = Dropzone(app)
 db = SQLAlchemy(app)
+##################################################################
+global tempfname
+tempfname = ''
 ##################################################################
 
 """ login information"""
@@ -37,8 +52,6 @@ SMTP_PASSWORD = pickle.load(open('pw.pickle', 'rb'))
 ##################################################################
 
 """ 사용자 요청 저장 """
-
-
 class QueryLostAnimals(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     querydate = db.Column(db.String, unique=True, nullable=False)
@@ -57,49 +70,53 @@ def mainpage():
 
 
 """ 사용자 요청 페이지 """
-
-
 @app.route('/find_my_q', methods=['GET', 'POST'])
 def ask():
+    global tempfname
     # 사용자 요청 발생 시
     if request.method == 'POST':
-        f = request.files['file']
+        if request.files != ImmutableMultiDict([]):
+            for key, f in request.files.items():
+                if key.startswith('file'):
+                    tempfname = f.filename
+                    f.save(os.path.join(app.config['UPLOADED_PATH'], tempfname))
+            return '', 204
+        else:
+            # metadata 저장
+            ttime = datetime.now()
+            time = str(ttime)
+            qla = QueryLostAnimals(querydate=time, location=request.form['location'], lostdate=request.form['date'],
+                                   animal=request.form['animal'])
+            db.session.add(qla)
+            db.session.commit()
 
-        # metadata 저장
-        ttime = datetime.now()
-        time = str(ttime)
-        qla = QueryLostAnimals(querydate=time, location=request.form['location'], lostdate=request.form['date'],
-                               animal=request.form['animal'])
-        db.session.add(qla)
-        db.session.commit()
+            # 파일 저장
+            fn = (time.replace('-', '.').replace(' ', '_').replace(':', '.') + '_' + str(qla.id) + '.' +
+                  tempfname.split('.')[-1])
+            oldname = os.path.join(app.config['UPLOADED_PATH'], tempfname)
+            newname = os.path.join(app.config['UPLOADED_PATH'], fn)
+            os.rename(oldname, newname)
+            qla.filename = fn
+            db.session.commit()
+            shutil.copy(newname, os.path.join('./static/images/input_image', fn))
+            shutil.copy(newname, os.path.join('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list', fn))
 
-        # 파일 저장
-        fn = (time.replace('-', '.').replace(' ', '_').replace(':', '.') + '_' + str(qla.id) + '.' +
-              f.filename.split('.')[-1])
-        f.save(os.path.join(app.config['UPLOADED_PATH'], fn))
-        qla.filename = fn
-        db.session.commit()
-        shutil.copy(os.path.join(app.config['UPLOADED_PATH'], fn), os.path.join('./static/images/input_image', fn))
-        shutil.copy(os.path.join(app.config['UPLOADED_PATH'], fn), os.path.join('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list', fn))
+            # 쿼리 이미지 분류기에 넘기기
+            call_fun.main(request.form['location'],request.form['date'])
 
-        # 쿼리 이미지 분류기에 넘기기
-        call_fun.main(request.form['location'],request.form['date'])
+            os.remove('./static/images/input_image'+'/'+fn)
+            os.remove('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'+'/'+fn)
+            # 작업 소요시간 확인
+            print('소요된 시간 :' + str(datetime.now() - ttime))
 
-        os.remove('./static/images/input_image'+'/'+fn)
-        os.remove('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'+'/'+fn)
-        # 작업 소요시간 확인
-        print('소요된 시간 :' + str(datetime.now() - ttime))
-
-        # 결과 페이지로 이동
-        return redirect('/find_my_a?id=' + str(qla.id))
+            # 결과 페이지로 이동
+            return redirect('/find_my_a?id=' + str(qla.id))
 
     # 기본 화면
     return render_template('find_my_dog_q.html')
 
 
 """ 결과 페이지 """
-
-
 @app.route('/find_my_a', methods=['GET', 'POST'])
 def answer():
     ITEMPERPAGE = 10  # 페이지 당 노출 아이템 수
@@ -115,6 +132,7 @@ def answer():
         # 유사도 높은 이미지 DB에서 로드
         sims = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_web.csv', names=['rank', 'number'], header=0)
         found = dbquery(db='protect_animals_url1', id=tuple(sims['number'].values))
+        print(found)  # DB에서 뭘 넘겨주는지 확인해봅시다
         found = sims.merge(pd.DataFrame(pd.DataFrame(found,
                                                      columns=['no', 'number', 'kind', 'color', 'sex', 'neutralization',
                                                               'age_weight', 'date', 'location', 'characteristic',
