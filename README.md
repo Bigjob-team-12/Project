@@ -18,6 +18,7 @@
     > 야외 생활로 인한, 유기 기간에 따른 외형적 변화
     
 #### System
+```Python
 $ project
 │
 ├─ _db
@@ -67,6 +68,7 @@ $ project
                 ├─ app.py
                 ├─ call_fun.py
                 └─ database.sqlite
+```
 
 
 #### 프로젝트 진행 과정
