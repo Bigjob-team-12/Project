@@ -16,6 +16,57 @@
   - 기타 고려사항:
     > 눈 색깔, 무늬 형태 등 도메인 특화 피처들의 반영 가능성  
     > 야외 생활로 인한, 유기 기간에 따른 외형적 변화
+    
+#### System
+$ project
+│
+├─ _db
+│     └─ data
+│             ├─ crawling_data
+│             │       └─ [개]
+│             ├─ model_data
+│             │       ├─ gallery
+│             │       │     └─ gallery_list
+│             │       ├─ query
+│             │       │     └─ query_list
+│             │       └─ working
+│             │               ├─ dog_breeds.txt
+│             │               ├─ result.csv
+│             │               ├─ to_reid.csv
+│             │               ├─ to_web.csv
+│             │               └─ tmp.h5
+│             └─ preprocessed_data
+│                       └─ dog_class ─ image
+└─ _src
+        ├─ batch
+        │     └─ update_data.bat
+        ├─ data_analysis
+        │     ├─ dog_image_similarity
+        │     │     ├─ copy_image.py
+        │     │     ├─ crawling_to_preprocessed.py
+        │     │     ├─ dog_breed_similarity_comparison.py
+        │     │     ├─ extract_similar_image_path.py
+        │     │     └─ predict_dog_data.py
+        │     └─ re_id
+        │             └─ code
+        │                    └─ *
+        ├─ data_analysis
+        │     └─ data_collection_zooseyo.py
+        ├─ data_processing
+        │     └─ image_data_download.py
+        └─ web
+                ├─ static
+                │      ├─ bootstrap
+                │      └─ images
+                │               ├─ input_image
+                │               └─ uploads
+                ├─ templates
+                │      ├─ find_my_dog_a.html
+                │      ├─ find_my_dog_q.html
+                │      └─ index.html
+                ├─ app.py
+                ├─ call_fun.py
+                └─ database.sqlite
 
 
 #### 프로젝트 진행 과정
