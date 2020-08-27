@@ -19,7 +19,7 @@
     
 #### System
 ```Python
-$ project
+$ main_project
 │
 ├─ _db
 │   └─ data
