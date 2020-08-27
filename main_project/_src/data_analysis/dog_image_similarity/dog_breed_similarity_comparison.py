@@ -27,7 +27,7 @@ def load_data():
     image별 softmax값 저장된 data 불러오기
     :return: data
     '''
-    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/result.csv').set_index('file_name').iloc[:, 1:-3]
+    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/result.csv').set_index('file_name').iloc[:, 1:]
 
     print('-'*10 + 'data shape and data.head' + '-'*10)
     print(data.shape)

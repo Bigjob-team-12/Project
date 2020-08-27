@@ -13,27 +13,6 @@ import re
 import sys
 import shutil
 import call_fun
-'''
-province = {
-    '서울': ['서울', '인천', '경기'],
-    '인천': ['인천', '서울', '경기'],
-    '대전': ['대전', '세종', '충북', '충남'],
-    '대구': ['대구', '경북', '경남'],
-    '울산': ['울산', '부산', '경북', '경남'],
-    '부산': ['부산', '울산', '경남'],
-    '광주': ['광주', '전남'],
-    '세종': ['세종', '대전', '충북', '충남'],
-    '경기': ['서울', '인천', '강원', '충북', '충남'],
-    '강원': ['강원', '경기', '충북', '경북'],
-    '충북': ['충북', '대전', '세종', '경기', '강원', '충남', '경북', '전북'],
-    '충남': ['충남', '대전', '세종', '경기', '충북', '전북'],
-    '경북': ['경북', '대구', '울산', '강원', '충북', '경남', '전북'],
-    '경남': ['경남', '대구', '울산', '부산', '경북', '전북', '전남'],
-    '전북': ['전북', '충북', '충남', '경북', '경남', '전남'],
-    '전남': ['전남', '광주', '경남', '전북'],
-    '제주': ['제주'] 
-    }
-'''
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 upload_dir = os.path.join(basedir, 'static/images/uploads')
@@ -104,7 +83,7 @@ def ask():
         shutil.copy(os.path.join(app.config['UPLOADED_PATH'], fn), os.path.join('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list', fn))
 
         # 쿼리 이미지 분류기에 넘기기
-        call_fun.main()
+        call_fun.main(request.form['location'],request.form['date'])
 
         os.remove('./static/images/input_image'+'/'+fn)
         os.remove('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'+'/'+fn)

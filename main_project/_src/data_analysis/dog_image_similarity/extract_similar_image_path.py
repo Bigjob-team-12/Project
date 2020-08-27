@@ -9,6 +9,31 @@ import torch
 from predict_dog_data import get_steps, make_generators, make_model, make_predictions
 from dog_breed_similarity_comparison import load_data, cos_sim, euc_sim, pearson
 from numba import cuda
+import pymysql
+
+# DB connect
+conn = pymysql.connect(host='localhost', user='root', password='bigjob12',
+                   db='project', charset='utf8')
+
+province = {
+    '서울': ['서울', '인천', '경기'],
+    '인천': ['인천', '서울', '경기'],
+    '대전': ['대전', '세종', '충북', '충남'],
+    '대구': ['대구', '경북', '경남'],
+    '울산': ['울산', '부산', '경북', '경남'],
+    '부산': ['부산', '울산', '경남'],
+    '광주': ['광주', '전남'],
+    '세종': ['세종', '대전', '충북', '충남'],
+    '경기': ['서울', '인천', '강원', '충북', '충남'],
+    '강원': ['강원', '경기', '충북', '경북'],
+    '충북': ['충북', '대전', '세종', '경기', '강원', '충남', '경북', '전북'],
+    '충남': ['충남', '대전', '세종', '경기', '충북', '전북'],
+    '경북': ['경북', '대구', '울산', '강원', '충북', '경남', '전북'],
+    '경남': ['경남', '대구', '울산', '부산', '경북', '전북', '전남'],
+    '전북': ['전북', '충북', '충남', '경북', '경남', '전남'],
+    '전남': ['전남', '광주', '경남', '전북'],
+    '제주': ['제주']
+    }
 
 def get_data_sets(dir, image_size):
     '''
@@ -33,7 +58,7 @@ def get_data_sets(dir, image_size):
             files.append(image_dir)
 
     return np.array(data), np.array(files)
-def compare_similarities_and_show_results(predict, image_path, location, sim_func = pearson, n=10):
+def compare_similarities_and_show_results(predict, location, date, sim_func = pearson, n=10):
     '''
     유사도 비교 후 높은 순으로 10개 보여주기
     :param predict: softmax 확률값
@@ -46,13 +71,41 @@ def compare_similarities_and_show_results(predict, image_path, location, sim_fun
 
     data = load_data()
 
+    # print(data.head())
+    print(location, date.replace('-',''))
+
+    # 날짜 filtering
+    date = int(date.replace('-',''))
+
+    print('raw data')
+    print(data.shape)
+    data = data[data.start.apply(lambda x : date > x)]
+
+    data = data[data.end.apply(lambda x: date < x)]
+
+    print()
+    print('date filtering')
+    print(data.shape)
+
+    # 지역 filtering
+    # data = data[data['name'].apply(lambda x : x[:2] in province[location])]
+    data = data[data['name'].apply(lambda x : x[:2] == location)]
+    print()
+    print('지역 filtering')
+    print(data.shape)
+
+    data = data.iloc[:, :30]
+
     # file_list = data.apply(lambda x: sim_func(x, predict[0]), axis=1).sort_values(ascending=False).index[:n]
     new_data = data.apply(lambda x: sim_func(x, predict[0]), axis=1).sort_values(ascending=False)
+    new_data = new_data[new_data.apply(lambda x : x[0] > 0)]
 
-    print(new_data[new_data.apply(lambda x : x[0] > 0)])
+    print()
+    print('유사도 filtering')
+    print(new_data.shape)
 
     return new_data
-def show_similar_images(source_dir,output_dir,image_path, location,image_size=224,rand_seed=128):
+def show_similar_images(source_dir,output_dir,location, date, image_size=224,rand_seed=128):
     '''
     입력한 이미지와 저장되어 있는 공고 데이터와의 유사도 비교 후 10개 보여주기
     :param source_dir: input image directory
@@ -73,20 +126,20 @@ def show_similar_images(source_dir,output_dir,image_path, location,image_size=22
     predict = make_predictions(output_dir, test_gen, t_steps, model)
 
     # 유사한 image 보여주기
-    file_path = compare_similarities_and_show_results(predict, image_path, location, sim_func = pearson)
+    file_path = compare_similarities_and_show_results(predict, location, date, sim_func = pearson)
 
     return file_path
-def main():
+def main(location, date):
     source_dir = 'C:/Users/kdan/BigJob12/main_project/_src/web/static/images/input_image'  # 쿼리 이미지
     output_dir = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working'  # 모델
     image_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/Preprocessed_data/'  # 공고 이미지
     # image_path = '../../../_db/data/input_query/input/dog_data/ours_dog/test'
-    location = '경북'
+    # location = '경북'
 
     image_size = 224
     rand_seed = 256
 
-    file_path = show_similar_images(source_dir, output_dir, image_path, location, image_size=image_size,
+    file_path = show_similar_images(source_dir, output_dir, location, date, image_size=image_size,
                                     rand_seed=rand_seed)
 
     pd.DataFrame(file_path).to_csv(output_dir + '/to_reid.csv', encoding='u8')

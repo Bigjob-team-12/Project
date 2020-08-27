@@ -27,48 +27,38 @@ def download_image(images):
     :param images: crawling data(image url, number, kind)
     :return: None
     '''
+    download_path = '../../_db/data/Crawling_data/[개]/'
 
-    path = '../../_db/data/crawling_data/'
-
-    check_path = '../../_db/data/Preprocessed_data/'
+    image_path = '../../_db/data/Preprocessed_data/'
 
     for url, number, class_name in images:
         dog_cat, *class_name = class_name.split()
 
-        tmp_path = path + dog_cat
-        # file 유무 확인 후 없을 경우 생성
-        if not os.path.isdir(tmp_path):
-            os.mkdir(tmp_path)
+        if dog_cat == '[개]': pass
+        else: continue
+
+        tmp_path = download_path
 
         class_name = '_'.join(class_name) if len(class_name) else 'none'
 
         tmp_path = tmp_path + '/' + class_name
-        check_path = check_path + '/' + class_name
-
         if not os.path.isdir(tmp_path):
             os.mkdir(tmp_path)
-
-        print(class_name + '_' + number)
-        # print(url)
-        # urllib.request.urlretrieve(url, tmp_path + '/' + class_name + '_' + number + ".jpg")
+        if not os.path.isdir(image_path + '/' + class_name):
+            os.mkdir(image_path + '/' + class_name)
 
         try:
             # download image
             print(class_name + '_' + number)
             # file 존재할 경우 break
-            if os.path.isfile(check_path + '/' + class_name + '_' + number + ".jpg"): break
+            if os.path.isfile(image_path + '/' + class_name + '/' + class_name + '_' + number + ".jpg"): break
             else: urllib.request.urlretrieve(url, tmp_path + '/' + class_name + '_' + number + ".jpg")
-
-            ### crop python
-            ### detect.name
 
         except:
             # 해당 file remove
             if os.path.isfile(tmp_path + '/' + class_name + '_' + number + ".jpg"):
                 os.remove(tmp_path + '/' + class_name + '_' + number + ".jpg")
             print('download error : ' + number)
-
-        # break
 
 if __name__ == '__main__':
     # load image url, name

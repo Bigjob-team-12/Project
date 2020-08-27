@@ -13,6 +13,11 @@ from PIL import Image
 import cv2
 import os
 from tqdm import tqdm
+import pymysql
+
+# DB connect
+conn = pymysql.connect(host='localhost', user='root', password='bigjob12',
+                   db='project', charset='utf8')
 
 def get_data_sets(test_path, image_size):
     '''
@@ -211,7 +216,7 @@ def display_pred(output_dir, pred, t_files, t_labels, class_list):
     time.sleep(5.0)
 
     return accuracy
-def save_predicted_value_as_csv(predict, test_labels, test_files, class_list):
+def save_predicted_value_as_csv(predict, test_labels, test_files, class_list, output_dir):
     '''
     save predict
     :param predict:
@@ -220,6 +225,12 @@ def save_predicted_value_as_csv(predict, test_labels, test_files, class_list):
     :param class_list:
     :return: None
     '''
+    curs = conn.cursor()
+    sql = 'SELECT number, deadline from protect_animals_url1'
+    curs.execute(sql)
+    rows = curs.fetchall()
+
+    rows = dict(rows)
 
     result = pd.DataFrame(predict)
 
@@ -227,9 +238,24 @@ def save_predicted_value_as_csv(predict, test_labels, test_files, class_list):
     result['predict_class'] = result.iloc[:, :-1].idxmax(axis=1)
     result['class_name'] = list(map(lambda x: class_list[x], result['true_class']))
     result['file_name'] = result['class_name'] + '/' + test_files
+    result['name'] = result['file_name'].apply(lambda x: x.split('_')[-1][:-4])
+    result['deadline'] = result['name'].apply(lambda x: rows[x])
+    result['start'] = result['deadline'].apply(lambda x : x.split()[0])
+    result['end'] = result['deadline'].apply(lambda x : x.split()[-1])
 
-    result.head()
-    result.to_csv(output_dir + '/result.csv')
+    print(result.shape)
+
+    tmp_result = pd.read_csv(output_dir + '/result.csv').iloc[:, 1:]
+
+    result.columns = tmp_result.columns
+
+    print(tmp_result.shape)
+
+    tmp_result = pd.concat([result, tmp_result], ignore_index=True)
+
+    print(tmp_result.shape)
+
+    tmp_result.to_csv(output_dir + '/result.csv')
 def TF2_classify(source_dir,output_dir,image_size=224,rand_seed=128):
     '''
     classification by breeds and save predict
@@ -253,11 +279,12 @@ def TF2_classify(source_dir,output_dir,image_size=224,rand_seed=128):
     predict = make_predictions(output_dir, test_gen, t_steps, model)
     # accuracy = display_pred(output_dir,predict,test_files,test_labels,class_list)
     # print('-'*10 + 'accuracy : ' + str(accuracy) + ' ' + '-'*10)
-    save_predicted_value_as_csv(predict, test_labels, test_files, class_list)
+    save_predicted_value_as_csv(predict, test_labels, test_files, class_list, output_dir)
 
 if __name__ == '__main__':
     # test data directory
     source_dir = '../../../_db/data/Crawling_data/[개]'
+    # source_dir = '../../../_db/data/Preprocessed_data'
     # source_dir = '../../../_db/data/input_query/input/dog_data/ours_dog/test'
     # model directory
     output_dir='../../../_db/data/model_data/working'

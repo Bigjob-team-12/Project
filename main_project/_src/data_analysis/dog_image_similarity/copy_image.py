@@ -5,13 +5,19 @@ import sys
 import gc
 import torch
 from numba import cuda
+import os
 
 def main():
-    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_image_similarity/test.csv')
+    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_reid.csv')
 
     image_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/Preprocessed_data/'
 
     copy_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data/gallery/gallery_list/'
+
+    shutil.rmtree(copy_path)
+
+    if not os.path.isdir(copy_path[:-1]):
+        os.mkdir(copy_path[:-1])
 
     start = time.time()  # 시작 시간 저장
 

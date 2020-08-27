@@ -8,10 +8,9 @@ import reid_test# , flush_gpu
 from numba import cuda
 
 
-
-def main():
+def main(location, date):
     # input image에 대해 공고 이미지 filtering
-    extract_similar_image_path.main()
+    extract_similar_image_path.main(location, date)
 
     # filtering된 image re_id 사용할 directory로 copy
     copy_image.main()
