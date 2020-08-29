@@ -1,4 +1,4 @@
-<h1 align="center"> Pet_reID_baseline_pytorch </h1>
+<h1 align="center"> Pet_re_ID </h1>
 
 ### Usage
 * [v] Calculating image similarity(cosine distance) 
