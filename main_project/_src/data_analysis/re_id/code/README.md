@@ -27,8 +27,9 @@ We add one linear layer(bottleneck), one batchnorm layer and relu.
 
 ## Code 
 
- - reid_query    # extract_feature, load_network 함수 사용
-                 # query 이미지를 입력으로 받아 외모적 특징(512개의 vector)을 추출한다. 
+ - reid_query    
+        - # extract_feature, load_network 함수 사용 <br>
+        -  # query 이미지를 입력으로 받아 외모적 특징(512개의 vector)을 추출한다. 
                  
  - reid_gallery  # extract_feature, load_network 함수 사용
                  # Crawling 된 유기동물 공고 이미지의 외모적 특징을 뽑아 mat형식으로 저장한다. 
