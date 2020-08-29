@@ -10,6 +10,7 @@ from predict_dog_data import get_steps, make_generators, make_model, make_predic
 from dog_breed_similarity_comparison import load_data, cos_sim, euc_sim, pearson
 from numba import cuda
 import pymysql
+import csv
 import pickle
 
 # DB connect
@@ -155,8 +156,11 @@ def main(location, date, model):
 
     data = [location, date]
 
-    with open(output_dir + '/' + 'data.pickle', 'wb') as f:
-        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+    # with open(output_dir + '/' + 'data.pickle', 'wb') as f:
+    #     pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+    with open(output_dir + '/' + 'data.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(data)
 
     image_size = 224
     rand_seed = 256

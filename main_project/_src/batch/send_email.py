@@ -96,8 +96,10 @@ def send_mail(newfoundid, queryid = 365):
             s.login(SMTP_USER, SMTP_PASSWORD)
             s.sendmail(SMTP_USER, msg["To"], msg.as_string())
 def load_data():
-    with open('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/data.pickle', 'rb') as f:
-        data = pickle.load(f)
+    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/data.csv', encoding='cp949')
+    #
+    # with open('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/data.pickle', 'rb') as f:
+    #     data = pickle.load(f)
     return data
 def compare_list():
     email_list = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_email.csv')['0'].tolist()
@@ -113,6 +115,8 @@ def compare_list():
 
 if __name__ == '__main__':
     loc, t = load_data()
+
+    print(loc, t)
 
     extract_similar_image_path.main(loc, t, model)
 
