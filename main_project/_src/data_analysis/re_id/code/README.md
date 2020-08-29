@@ -9,7 +9,7 @@
 - 계산된 수치를 정렬 및 Top N 출력
 
 ### Example  
-<p align="center"><img src="example.png" width="640"\></p>
+<p align="center"><img src="show_all_data.png" width="640"\></p>
 
 
 ### Model Structure
