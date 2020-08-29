@@ -25,14 +25,3 @@ We add one linear layer(bottleneck), one batchnorm layer and relu.
 - [Optional] apex (for float16) 
 - [Optional] [pretrainedmodels](https://github.com/Cadene/pretrained-models.pytorch)
 
-
-## Getting started
-### Installation
-@@ -152,17 +49,7 @@ Because pytorch and torchvision are ongoing projects.
-
-Here we noted that our code is tested based on Pytorch 0.3.0/0.4.0/0.5.0/1.0.0 and Torchvision 0.2.0/0.2.1 .
-
-### Train
-Train a model by
-@@ -202,23 +89,6 @@ python test.py --gpu_ids 0 --name ft_ResNet50 --test_dir your_data_path  --batch
-`--data_dir` the path of the testing data.
