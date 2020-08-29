@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <title>찾아줘 Cat Dog: 내 동물 사진 올리기</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
@@ -11,11 +12,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
     {{ dropzone.load_css() }}
     {{ dropzone.style('border: 2px dashed #0087F7; margin: 10px 0 10px; min-height: 20vh; width: 600px') }}
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="../static/assets/img/favicon.ico"/>
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"
+          rel="stylesheet" type="text/css"/>
+    <!-- Third party plugin CSS-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
+          rel="stylesheet"/>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="../static/css/styles.css" rel="stylesheet"/>
 </head>
 
-<body>
+<body id="page-top">
 <!-- navigation bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" id="mainNav">
     <a class="navbar-brand" href="/">찾아주CatDog</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
             aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +41,7 @@
                 <a class="nav-link" href="find_my_q">우리 반려동물 찾기<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">관심 반려동물 찾기</a>
+                <a class="nav-link" href="find_future_q">관심 반려동물 찾기</a>
             </li>
         </ul>
         <span class="navbar-text">
@@ -36,7 +50,7 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="container h-100">
     <div class="row justify-content-md-center">
         <form action="{{ url_for('ask') }}" method="POST" enctype="multipart/form-data">
             <div class="row">
@@ -90,5 +104,10 @@
         {{ dropzone.config() }}
     </div>
 </div>
+<footer class="bg-light py-5">
+    <div class="container">
+        <div class="small text-center text-muted">Copyright © 2020 - 찾아주 Cat! Dog!</div>
+    </div>
+</footer>
 </body>
 </html>

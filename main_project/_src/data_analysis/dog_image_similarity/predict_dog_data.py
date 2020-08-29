@@ -15,6 +15,11 @@ import os
 from tqdm import tqdm
 import pymysql
 
+from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+from tensorflow.keras.preprocessing import image
+
+
+
 # DB connect
 conn = pymysql.connect(host='localhost', user='root', password='bigjob12',
                    db='project', charset='utf8')
@@ -109,14 +114,18 @@ def make_generators(test_data, t_batch_size, test_labels=None):
     test_gen=test_datagen.flow(test_data, y=test_labels, batch_size=t_batch_size, shuffle=False)
 
     return test_gen
-def make_model(rand_seed, size=30):
+def make_model(rand_seed, output_dir = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working', size=30):
     '''
     make initial model
     :param rand_seed:
     :param size: class size
     :return: model
     '''
+    print('make_model1')
+    tf.keras.backend.clear_session()
+    # mobile = mobile
     mobile = tf.keras.applications.mobilenet.MobileNet()
+
     # remove last 5 layers of model and add dense layer with 128 nodes and the prediction layer with size nodes
     # where size=number of classes
     x = mobile.layers[-6].output
@@ -126,10 +135,16 @@ def make_model(rand_seed, size=30):
     model = Model(inputs=mobile.input, outputs=predictions)
     for layer in model.layers:
         layer.trainable = True
+
     model.compile(Adam(lr=0.0015), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
+    model_path = os.path.join(output_dir, 'tmp.h5')
+
+    model.load_weights(model_path)
+
     return model
-def make_predictions(output_dir, test_gen, t_steps, model):
+
+def make_predictions(test_gen, t_steps, model):
     '''
     품종별 분류 될 확률
     :param output_dir: model directory
@@ -139,13 +154,18 @@ def make_predictions(output_dir, test_gen, t_steps, model):
     :return: predict
     '''
     test_gen.reset()
-    model_path=os.path.join(output_dir,'tmp.h5')
-    # load model weight
-    model.load_weights(model_path)
-    pred=model.predict_generator(test_gen, steps=t_steps,verbose=1) # make predictions on the test set
+    # model_path=os.path.join(output_dir,'tmp.h5')
+    # print('test2')
+    # # load model weight
+    # model.load_weights(model_path)
+    print('test3')
+    # pred=model.predict_generator(test_gen, steps=t_steps,verbose=1) # make predictions on the test set
 
-    del model
-    tf.keras.backend.clear_session()
+    pred = model.predict(test_gen)
+    print('test4')
+
+    # del model
+    # tf.keras.backend.clear_session()
 
     return pred
 def display_pred(output_dir, pred, t_files, t_labels, class_list):

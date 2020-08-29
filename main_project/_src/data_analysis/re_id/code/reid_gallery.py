@@ -14,7 +14,6 @@ from model import ft_net
 from PIL import ImageFile
 import pandas as pd
 import numpy as np
-import demo
 from numba import cuda
 import time
 ######################################################################

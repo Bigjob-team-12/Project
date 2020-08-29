@@ -14,12 +14,38 @@ import re
 import sys
 import shutil
 import call_fun
+import math
+from numba import cuda
 from werkzeug.datastructures import ImmutableMultiDict
+import tensorflow as tf
+from tensorflow import keras
+import re_run
+# path 설정
+sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_image_similarity')
+import predict_dog_data
+# gpu_devices = tf.config.experimental.list_physical_devices('GPU')
+sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_image_similarity')
+sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/re_id/code')
+import extract_similar_image_path, copy_image, predict_dog_data
+import reid_query
 
+
+model = predict_dog_data.make_model(256)
+sys.path.pop()
+
+
+
+# print(sys.path.pop())
+#
+# print(model)
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+# config = tf.compat.v1.ConfigProto()
+# config.gpu_option.allow_growth = True
 basedir = os.path.abspath(os.path.dirname(__file__))
 upload_dir = os.path.join(basedir, 'static/images/uploads')
 
 ##################################################################
+
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:bigjob12@localhost:3306/project"
 app.config['SECRET_KEY'] = 'cat'
@@ -48,6 +74,7 @@ SMTP_PORT = 465
 #pickle.dump(SMTP_PASSWORD, open("pw.pickle", 'wb'))
 SMTP_USER = "findmycatdog@gmail.com"
 SMTP_PASSWORD = pickle.load(open('pw.pickle', 'rb'))
+first = 1
 
 ##################################################################
 
@@ -60,16 +87,13 @@ class QueryLostAnimals(db.Model):
     animal = db.Column(db.String, nullable=False)
     filename = db.Column(db.String, unique=True)
 
-
 ##################################################################
 
 
-@app.route('/')
-def mainpage():
-    return render_template('index.html')
 
 
 """ 사용자 요청 페이지 """
+@app.route('/')
 @app.route('/find_my_q', methods=['GET', 'POST'])
 def ask():
     global tempfname
@@ -102,19 +126,40 @@ def ask():
             shutil.copy(newname, os.path.join('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list', fn))
 
             # 쿼리 이미지 분류기에 넘기기
-            call_fun.main(request.form['location'],request.form['date'])
+            count = 0
+            print('1')
+            extract_similar_image_path.main(request.form['location'], request.form['date'], model)
+            print('call_2')
+
+            # filtering된 image re_id 사용할 directory로 copy
+            copy_image.main()
+            print('call_3')
+
+            reid_query.main()
+            #call_fun.main(request.form['location'], request.form['date'], model)
+
+            # if first:
+            #     call_fun.main(request.form['location'],request.form['date'], first)
+            #     first = 0
+            # else: call_fun.main(request.form['location'],request.form['date'], first)
+            print('2')
 
             os.remove('./static/images/input_image'+'/'+fn)
             os.remove('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'+'/'+fn)
             # 작업 소요시간 확인
             print('소요된 시간 :' + str(datetime.now() - ttime))
+            count += 1
+
+            # tf.config.experimental.set_visible_devices([], 'GPU')
+            # device = cuda.get_current_device()
+            # device.reset()
+            # cuda.close()
 
             # 결과 페이지로 이동
             return redirect('/find_my_a?id=' + str(qla.id))
 
     # 기본 화면
-    return render_template('find_my_dog_q.html')
-
+    return render_template('index.html')
 
 """ 결과 페이지 """
 @app.route('/find_my_a', methods=['GET', 'POST'])
@@ -132,7 +177,7 @@ def answer():
         # 유사도 높은 이미지 DB에서 로드
         sims = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_web.csv', names=['rank', 'number'], header=0)
         found = dbquery(db='protect_animals_url1', id=tuple(sims['number'].values))
-        print(found)  # DB에서 뭘 넘겨주는지 확인해봅시다
+        pagesize = math.ceil(len(found) / ITEMPERPAGE)
         found = sims.merge(pd.DataFrame(pd.DataFrame(found,
                                                      columns=['no', 'number', 'kind', 'color', 'sex', 'neutralization',
                                                               'age_weight', 'date', 'location', 'characteristic',
@@ -140,8 +185,7 @@ def answer():
                                                               'center_address', 'image', 'url', 'time'])))
         return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked,
                                found=found[found.columns[1:]].values.tolist()[
-                                     (page - 1) * ITEMPERPAGE:page * ITEMPERPAGE], register=register,
-                               path=request.full_path)
+                                     (page - 1) * ITEMPERPAGE:page * ITEMPERPAGE], register=register, pagesize = pagesize)
 
     # 사용자 푸시 알림 신청 시
     if request.method == 'POST':
@@ -156,7 +200,6 @@ def answer():
             # 올바른 이메일이 입력되지 않았을 경우
             register = 'No'
         return redirect('/find_my_a?id=' + request.form['id'] + '&register=' + register)
-
 
 """ DB query """
 def dbquery(db=None, id=None, insert=False, query=None):
@@ -218,7 +261,6 @@ def send_mail(queryid, newfoundid):
             s.sendmail(SMTP_USER, msg["To"], msg.as_string())
 
 ##################################################################
-
 
 if __name__ == '__main__':
 #    pd.set_option('display.max_rows', None)

@@ -12,7 +12,7 @@ import yaml
 import math
 from model import ft_net
 from PIL import ImageFile
-import demo
+import reid_sort
 from numba import cuda
 import time
 ######################################################################
@@ -44,14 +44,16 @@ def extract_feature(model, dataloaders,ms):
         n, c, h, w = img.size()
         # count += n
         # print(count)
-        ff = torch.FloatTensor(n, 512).zero_().cuda()
+       # ff = torch.FloatTensor(n, 512).zero_().cuda()
+        ff = torch.FloatTensor(n, 512).zero_()
 
         #     start = time.time()
         for i in range(2):
             if (i == 1):
                 img = fliplr(img)
 
-            input_img = Variable(img.cuda())
+            #input_img = Variable(img.cuda())
+            input_img = Variable(img)
 
             for scale in ms:
                 if scale != 1:
@@ -69,15 +71,15 @@ def extract_feature(model, dataloaders,ms):
 
 
 def main():
-    cuda.select_device(0)
-    cuda.close()
+    # cuda.select_device(0)
+    # cuda.close()
 
     ImageFile.LOAD_TRUNCATED_IMAGES = True
 
     ######################################################################
     # Options
     # --------
-    gpu_ids='0'
+    # gpu_ids='0'
     which_epoch='last'
     test_dir='C:/Users/kdan/BigJob12/main_project/_db/data/model_data'
     name='ft_ResNet50'
@@ -94,12 +96,12 @@ def main():
     if 'nclasses' in config:  # tp compatible with old config files
         nclasses = config['nclasses']
 
-    str_ids = gpu_ids.split(',')
-    gpu_ids = []
-    for str_id in str_ids:
-        id = int(str_id)
-        if id >= 0:
-            gpu_ids.append(id)
+    # str_ids = gpu_ids.split(',')
+    # gpu_ids = []
+    # for str_id in str_ids:
+    #     id = int(str_id)
+    #     if id >= 0:
+    #         gpu_ids.append(id)
 
     print('We use the scale: %s' % ms)
     str_ms = ms.split(',')
@@ -109,9 +111,9 @@ def main():
         ms.append(math.sqrt(s_f))
 
     # set gpu ids
-    if len(gpu_ids) > 0:
-        torch.cuda.set_device(gpu_ids[0])
-        cudnn.benchmark = True
+    # if len(gpu_ids) > 0:
+    #     torch.cuda.set_device(gpu_ids[0])
+    #     cudnn.benchmark = True
 
     ######################################################################
     # Data transform
@@ -132,7 +134,6 @@ def main():
                                                   shuffle=False, num_workers=0) for x in ['query']}
     class_names = image_datasets['query'].classes
     use_gpu = torch.cuda.is_available()
-
     ######################################################################
     # Load Collected data Trained model
     print('-------test-----------')
@@ -146,8 +147,8 @@ def main():
 
     # Change to test mode
     model = model.eval()
-    if use_gpu:
-        model = model.cuda()
+    # if use_gpu:
+    #     model = model.cuda()
     start_load = time.time()
 
     # Extract feature
@@ -158,7 +159,7 @@ def main():
 
     # Save to Matlab for check
     query_result = {'query_f': query_feature.numpy()}
-    demo.main(query_result,image_datasets,'notall')
+    reid_sort.main(query_result,image_datasets,'all')
     scipy.io.savemat('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/re_id/code/query_result.mat', query_result)
     print(name)
 

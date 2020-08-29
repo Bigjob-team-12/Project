@@ -101,6 +101,5 @@ def main():
     # # 10개의 data 보여주기
     # draw_plot(file_lst, img_lst)
 
-
 if __name__ == '__main__':
     main()

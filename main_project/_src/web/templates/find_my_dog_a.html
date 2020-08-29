@@ -9,7 +9,7 @@
 
 <body>
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" id="mainNav">
     <a class="navbar-brand" href="/">찾아주CatDog</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
             aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +21,7 @@
                 <a class="nav-link" href="find_my_q">우리 반려동물 찾기<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">관심 반려동물 찾기</a>
+                <a class="nav-link" href="find_future_q">관심 반려동물 찾기</a>
             </li>
         </ul>
         <span class="navbar-text">
@@ -131,19 +131,39 @@
 <!-- pagination -->
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
-        <li class="page-item {% if page == 1 %} disabled {% endif %}">
-            <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, page - 1) }}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
+        {% if page != 1 %}
+            <li class="page-item {% if page == 1 %} disabled {% endif %}">
+                <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, 1) }}" aria-label="Previous"
+                        {% if page == 1 %}  aria-disabled="true" {% endif %}>
+                    <span aria-hidden="true">1</span>
+            <li class="page-item"><a class="page-link">...</a></li>
             </a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
-        <li class="page-item {% if page == 10 %} disabled {% endif %}">
-            <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, page + 1) }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
+            </li>
+        {% endif %}
+        {% if page > 2 %}
+            <li class="page-item"><a class="page-link"
+                                     href="{{ 'find_my_a?id={}&page={}'.format(id, page - 1) }}">{{ page - 1 }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link">{{ page }}</a></li>
+        {% if page < (pagesize - 1) %}
+            <li class="page-item"><a class="page-link"
+                                     href="{{ 'find_my_a?id={}&page={}'.format(id, page + 1) }}">{{ page + 1 }}</a></li>
+        {% endif %}
+        {% if page != pagesize %}
+            <li class="page-item"><a class="page-link">...</a></li>
+            <li class="page-item {% if page == pagesize %} disabled {% endif %}">
+                <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, pagesize) }}" aria-label="Next"
+                        {% if page == pagesize %} aria-disabled="true" {% endif %}>
+                    <span aria-hidden="true">{{ pagesize }}</span>
+                </a>
+            </li>
+        {% endif %}
     </ul>
 </nav>
-
+<footer class="bg-light py-5">
+    <div class="container">
+        <div class="small text-center text-muted">Copyright © 2020 - 찾아주 Cat! Dog!</div>
+    </div>
+</footer>
 </body>
 </html>
