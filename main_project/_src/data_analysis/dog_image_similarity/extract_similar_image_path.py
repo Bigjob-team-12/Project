@@ -10,6 +10,7 @@ from predict_dog_data import get_steps, make_generators, make_model, make_predic
 from dog_breed_similarity_comparison import load_data, cos_sim, euc_sim, pearson
 from numba import cuda
 import pymysql
+import pickle
 
 # DB connect
 conn = pymysql.connect(host='localhost', user='root', password='bigjob12',
@@ -78,9 +79,11 @@ def compare_similarities_and_show_results(predict, location, date, sim_func = pe
     # 날짜 filtering
     date = int(date.replace('-',''))
 
+    print(date)
+
     print('raw data')
     print(data.shape)
-    data = data[data.start.apply(lambda x : date > x)]
+    data = data[data.start.apply(lambda x : date < x)]
     # data = data[data.end.apply(lambda x: date < x + 10)]
 
     print()
@@ -149,6 +152,11 @@ def main(location, date, model):
     image_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/Preprocessed_data/'  # 공고 이미지
     # image_path = '../../../_db/data/input_query/input/dog_data/ours_dog/test'
     # location = '경북'
+
+    data = [location, date]
+
+    with open(output_dir + '/' + 'data.pickle', 'wb') as f:
+        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
     image_size = 224
     rand_seed = 256

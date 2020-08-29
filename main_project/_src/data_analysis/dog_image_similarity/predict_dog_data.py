@@ -296,9 +296,7 @@ def TF2_classify(source_dir,output_dir,image_size=224,rand_seed=128):
     # init model
     model = make_model(rand_seed)
     # predict
-    predict = make_predictions(output_dir, test_gen, t_steps, model)
-    # accuracy = display_pred(output_dir,predict,test_files,test_labels,class_list)
-    # print('-'*10 + 'accuracy : ' + str(accuracy) + ' ' + '-'*10)
+    predict = make_predictions(test_gen, t_steps, model)
     save_predicted_value_as_csv(predict, test_labels, test_files, class_list, output_dir)
 
 if __name__ == '__main__':

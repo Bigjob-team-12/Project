@@ -43,7 +43,7 @@ def sort_img(qf, gf):
     return index, score, num
 
 
-def main(result,image_datasets,mode):
+def main(result,image_datasets,mode, first = True):
     ######################################################################
     # Options
     # --------
@@ -100,27 +100,28 @@ def main(result,image_datasets,mode):
     print(query_path)
 
     print('Top 10 images are as follow:')
-    try:  # Visualize Ranking Result
-        # Graphical User Interface is needed
-        #fig = plt.figure(figsize=(16, 8))
-        #ax = plt.subplot(2, 11, 1)
-        #ax.axis('off')
-        #imshow(query_path, 'query')
+    try:
+        if num > 10:
+            re_id_result = [image_datasets_gallery[mode_path].imgs[index[_]][0].split('\\')[-1][:-4].split('_')[-1]  for _ in range(500)]
+            print(re_id_result)
 
-        # save result for web
-        # for _ in range(5):
-        #
-        #     print(image_datasets_gallery[mode_path].imgs[index[_]][0])
-        #     print('-----')
-        #     print(image_datasets_gallery[mode_path].imgs[index[_]][0].split('\\')[-1][:-4])
-        #     print('-----')
-        #     print(image_datasets_gallery[mode_path].imgs[index[_]][0].split('\\')[-1][:-4].split('_')[-1])
-        #     print('-----')
+            
+            #### 수정 필요
+            tmp_result = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_reid.csv')['file_name'].apply(lambda x : x.split('_')[-1][:-4]).tolist()
 
-        if num > 10 :
-            result = [image_datasets_gallery[mode_path].imgs[index[_]][0].split('\\')[-1][:-4].split('_')[-1]  for _ in range(25)]
+            print(tmp_result)
+
+            result = []
+
+            for _ in re_id_result:
+                if _ in tmp_result: result.append(_)
+
             print(result)
+
+            if first:
+                pd.DataFrame(result).to_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_email.csv')
             pd.DataFrame(result).to_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_web.csv')
+
         else:
             result = [image_datasets_gallery[mode_path].imgs[index[_]][0].split('\\')[-1][:-4].split('_')[-1]  for _ in range(num)]
             print(result)
