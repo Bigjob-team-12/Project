@@ -24,7 +24,7 @@ $ main_project
 ├─ _db
 │   └─ data
 │       ├─ crawling_data
-│       │       └─ [개]  
+│       │       └─ [개]  #  Directory for crawled images. When the image processing is complete, go [preprocessed_data] directory
 │       ├─ model_data
 │       │       ├─ gallery
 │       │       │     └─ gallery_list # Temp directory for gallery images(option) 
@@ -33,7 +33,7 @@ $ main_project
 │       │       └─ working
 │       │             ├─ dog_breeds.txt  # Image statistics used in training 
 │       │             ├─ result.csv   #   
-│       │             ├─ to_reid.csv   # 
+│       │             ├─ to_reid.csv   # List of images that have passed Pearson correlation coefficient, region, and date filters
 │       │             ├─ to_web.csv   # List of images sent to the web
 │       │             └─ tmp.h5   # weights for classification model 
 │       └─ preprocessed_data
@@ -59,7 +59,7 @@ $ main_project
      ├─ data_analysis
      │     └─ data_collection_zooseyo.py
      ├─ data_processing
-     │     └─ image_data_download.py
+     │     └─ image_data_download.py # Code for downloading image 
      │     └─ yolo_v4
      │            └─  detect.py   # Detect dogs and cats. Crop target image and save 
      └─ web
@@ -71,9 +71,9 @@ $ main_project
          ├─ templates
          │      ├─ find_my_dog_a.html
          │      ├─ find_my_dog_q.html
-         │      └─ index.html
+         │      └─ index.html   # Main page
          ├─ app.py
-         └─ database.sqlite
+         └─ database.sqlite  # DB 
 ```
 
 
