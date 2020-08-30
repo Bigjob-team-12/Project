@@ -70,7 +70,7 @@ def extract_feature(model, dataloaders,ms):
     return features
 
 
-def main():
+def main(first = True):
     # cuda.select_device(0)
     # cuda.close()
 
@@ -125,7 +125,6 @@ def main():
     ])
 
     data_dir = test_dir
-
     ######################################################################
     # Load data
     image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms) for x in ['query']}
@@ -159,7 +158,7 @@ def main():
 
     # Save to Matlab for check
     query_result = {'query_f': query_feature.numpy()}
-    reid_sort.main(query_result,image_datasets,'all')
+    reid_sort.main(query_result,image_datasets,'all', first)
     scipy.io.savemat('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/re_id/code/query_result.mat', query_result)
     print(name)
 

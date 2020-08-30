@@ -1,169 +1,213 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>찾아줘 Cat Dog: 결과 확인</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>찾아주 Cat! Dog! </title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
+    {{ dropzone.load_css() }}
+    {{ dropzone.style('border: 2px dashed #fab6a3; background-color: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .75); margin: 10px 0 10px; min-height: 20vh; width: 600px') }}
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="../static/assets/img/favicon.ico"/>
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"
+          rel="stylesheet" type="text/css"/>
+    <!-- Third party plugin CSS-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
+          rel="stylesheet"/>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="../static/css/styles.css" rel="stylesheet"/>
 </head>
-
-<body>
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light" id="mainNav">
-    <a class="navbar-brand" href="/">찾아주CatDog</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="find_my_q">우리 반려동물 찾기<span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="find_future_q">관심 반려동물 찾기</a>
-            </li>
-        </ul>
-        <span class="navbar-text">
-      <a class="nav-link" href="#">About us</a>
-    </span>
+<body id="page-top">
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="/">찾아주 Cat! Dog! </a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto my-2 my-lg-0">
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/#about">내 반려동물 찾기</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
-
-<!-- 사용자 요청 정보 -->
-<div class="container">
-    <div class="row justify-content-between">
-        <div class="col-auto">
-            <h4><img class="query-image" src="{{ url_for('static', filename=asked[5]) }}" height="100"/> {{ asked[2] }}
-                / {{ asked[3] }}</h4>
-        </div>
-        <!-- 이메일 푸시 알림 신청: 작업중 -->
-        <div class="col-auto">
-            <form class="form-inline" method="POST">
-                <div class="input-group mb-2 mr-sm-2">
-                    <input type="text" class="form-control" name="emailid" placeholder="example">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">@</div>
+<!-- Masthead-->
+<header class="masthead" style="height: auto">
+    <!-- 사용자 요청 정보 -->
+    <div class="container h-auto" style="color: rgba(255, 255, 255, 0.7)">
+        <div class="row justify-content-between">
+            <div class="col-auto">
+                <h4><img class="query-image" src="{{ url_for('static', filename=asked[5]) }}"
+                         height=80vh> {{ asked[2] }}
+                    / {{ asked[3] }}</h4>
+            </div>
+            <!-- 이메일 푸시 알림 신청 -->
+            <div class="col-auto align-items-center justify-content-center text-center">
+                <form class="form-inline" method="POST">
+                    <div class="input-group mb-2 mr-sm-2">
+                        <input type="text" class="form-control" name="emailid" placeholder="example">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">@</div>
+                        </div>
+                        <input type="text" class="form-control" name="domain" placeholder="naver.com">
                     </div>
-                    <input type="text" class="form-control" name="domain" placeholder="naver.com">
-                </div>
-                <input type='hidden' name='id' value='{{ id }}'>
-                <button type="submit" class="btn btn-outline-info mb-2">이메일 푸시 알림 신청</button>
-            </form>
-            <small class="form-text text-muted" style="text-align:right;">
-                {% if register == None %} 이메일 주소는 푸시 알림을 위해서만 사용되며, 알림 취소 즉시 삭제됩니다.
-                {% elif register == 'Yes' %} <b>이메일 푸시 신청이 완료되었습니다.</b>
-                {% elif register == 'No' %} <b>이메일 푸시 신청이 실패하였습니다. 다시 입력해주세요.</b> {% endif %}
-            </small>
+                    <input type='hidden' name='id' value='{{ id }}'>
+                    <button type="submit" class="btn btn-info mb-2">이메일 푸시 알림 신청</button>
+                </form>
+                <small class="form-text" style="text-align:right; color: rgba(255, 255, 255, 0.7)">
+                    {% if register == None %} 이메일 주소는 푸시 알림을 위해서만 사용되며, 알림 취소 즉시 삭제됩니다.
+                    {% elif register == 'Yes' %} <b>이메일 푸시 신청이 완료되었습니다.</b>
+                    {% elif register == 'No' %} <b>이메일 푸시 신청이 실패하였습니다. 다시 입력해주세요.</b> {% endif %}
+                </small>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- 결과 데이터 10건 노출 -->
-<!-- 붙여서 노출하려면 card-group, 한 줄 5건 고정하려면 card-deck -->
-<div class="container">
-    <div class="card-group">
-        {% for _ in found[0:5] %}
-            <div class="card" style="max-width: 12vw;">
-                <img src="{{ _[14] }}" class="card-img-top"
-                     style="width: auto; height: auto; max-width: 20vw; max-height: 20vh; object-fit: cover;">
-                <div class="card-body">
-                    <h6 class="card-title">{{ _[0] }}</h6>
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th scope="row">지역</th>
-                            <td>{{ _[8] }}</td><!-- .split(' ')[:3] -->
-                        </tr>
-                        <tr>
-                            <th scope="row">몸무게</th>
-                            <td>{{ _[6].split('/')[-1][1:] }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">발견일</th>
-                            <td>{{ _[7] }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">공고 만료</th>
-                            <td>{{ _[10].split(' ')[-1] }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <a href="{{ _[15] }}" class="btn btn-light">자세히 보기</a>
+    <!-- 결과 데이터 10건 노출 -->
+    <div class="container h-auto">
+        {% if found == None %}
+        <h4 style = "text-align:center; color: rgba(255, 255, 255, 0.75) ">검색된 결과가 없습니다.</h4>
+        {% else %}
+        <div class="row align-items-center justify-content-center text-center" style="font-size: small">
+            <!-- 붙여서 노출하려면 card-group, 한 줄 5건 고정하려면 card-deck -->
+            <div class="container">
+                <div class="card-deck">
+                    {% for _ in found[0:5] %}
+                        <div class="card" style="width: 20vw;">
+                            <img src="{{ _[14] }}" class="card-img-top"
+                                 style="width: 100%; height: 10vw; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ _[0][:6] }}<br>{{ _[0][7:] }}</h6>
+                                <table class="table" style="width: 100%">
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row" span="1"
+                                            style="width: 28%; padding-left: 2px; padding-right: 2px">발견지
+                                        </th>
+                                        <td style="padding-right: 2px">{{ _[8] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" span="1" style="padding-left: 2px; padding-right: 02px">몸무게</th>
+                                        <td style="padding-right: 2px">{{ _[6].split('/')[-1][1:] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" span="1" style="padding-left: 2px; padding-right: 2px">발견일</th>
+                                        <td style="padding-right: 2px">{{ _[7] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" span="1" style="padding-left: 2px; padding-right: 2px">공고<br> 만료
+                                        </th>
+                                        <td style="padding-right: 2px">{{ _[10].split(' ')[-1][:4] }}-{{ _[10].split(' ')[-1][4:6] }}-{{ _[10].split(' ')[-1][6:] }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <a href="{{ _[15] }}" class="btn btn-light">자세히 보기</a>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
-            </div>
-        {% endfor %}
-    </div>
-    <div class="card-group">
-        {% for _ in found[5:] %}
-            <div class="card" style="max-width: 12vw;">
-                <img src="{{ _[14] }}" class="card-img-top"
-                     style="width: auto; height: auto; max-width: 20vw; max-height: 20vh; object-fit: cover;">
-                <div class="card-body">
-                    <h6 class="card-title">{{ _[0] }}</h6>
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th scope="row">지역</th>
-                            <td>{{ _[8] }}</td><!-- .split(' ')[:3] -->
-                        </tr>
-                        <tr>
-                            <th scope="row">몸무게</th>
-                            <td>{{ _[6].split('/')[-1][1:] }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">발견일</th>
-                            <td>{{ _[7] }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">공고 만료</th>
-                            <td>{{ _[10].split(' ')[-1] }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <a href="{{ _[15] }}" class="btn btn-light">자세히 보기</a>
+                <p style="font-size: 1em"> &nbsp; </p>
+                <div class="card-deck">
+                    {% for _ in found[5:] %}
+                        <div class="card" style="width: 20vw;">
+                            <img src="{{ _[14] }}" class="card-img-top"
+                                 style="width: 100%; height: 10vw; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ _[0][:6] }}<br>{{ _[0][7:] }}</h6>
+                                <table class="table" style="width: 100%">
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row" span="1"
+                                            style="width: 28%; padding-left: 2px; padding-right: 2px">발견지
+                                        </th>
+                                        <td style="padding-right: 2px">{{ _[8] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" span="1" style="padding-left: 2px; padding-right: 02px">몸무게</th>
+                                        <td style="padding-right: 2px">{{ _[6].split('/')[-1][1:] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" span="1" style="padding-left: 2px; padding-right: 2px">발견일</th>
+                                        <td style="padding-right: 2px">{{ _[7] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" span="1" style="padding-left: 2px; padding-right: 2px">공고<br> 만료
+                                        </th>
+                                        <td style="padding-right: 2px">{{ _[10].split(' ')[-1][:4] }}-{{ _[10].split(' ')[-1][4:6] }}-{{ _[10].split(' ')[-1][6:] }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <a href="{{ _[15] }}" class="btn btn-light">자세히 보기</a>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
+                <p style="font-size: 1em"> &nbsp; </p>
             </div>
-        {% endfor %}
+            <!-- pagination -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if page != 1 %}
+                        <li class="page-item {% if page == 1 %} disabled {% endif %}">
+                            <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, 1) }}"
+                               aria-label="Previous"
+                                    {% if page == 1 %}  aria-disabled="true" {% endif %}>
+                                <span aria-hidden="true">1</span>
+                        <li class="page-item"><a class="page-link">...</a></li>
+                        </a>
+                        </li>
+                    {% endif %}
+                    {% if page > 2 %}
+                        <li class="page-item"><a class="page-link"
+                                                 href="{{ 'find_my_a?id={}&page={}'.format(id, page - 1) }}">{{ page - 1 }}</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item"><a class="page-link">{{ page }}</a></li>
+                    {% if page < (pagesize - 1) %}
+                        <li class="page-item"><a class="page-link"
+                                                 href="{{ 'find_my_a?id={}&page={}'.format(id, page + 1) }}">{{ page + 1 }}</a>
+                        </li>
+                    {% endif %}
+                    {% if page != pagesize %}
+                        <li class="page-item"><a class="page-link">...</a></li>
+                        <li class="page-item {% if page == pagesize %} disabled {% endif %}">
+                            <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, pagesize) }}"
+                               aria-label="Next"
+                                    {% if page == pagesize %} aria-disabled="true" {% endif %}>
+                                <span aria-hidden="true">{{ pagesize }}</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
     </div>
-</div>
-
-<!-- pagination -->
-<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-        {% if page != 1 %}
-            <li class="page-item {% if page == 1 %} disabled {% endif %}">
-                <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, 1) }}" aria-label="Previous"
-                        {% if page == 1 %}  aria-disabled="true" {% endif %}>
-                    <span aria-hidden="true">1</span>
-            <li class="page-item"><a class="page-link">...</a></li>
-            </a>
-            </li>
-        {% endif %}
-        {% if page > 2 %}
-            <li class="page-item"><a class="page-link"
-                                     href="{{ 'find_my_a?id={}&page={}'.format(id, page - 1) }}">{{ page - 1 }}</a></li>
-        {% endif %}
-        <li class="page-item"><a class="page-link">{{ page }}</a></li>
-        {% if page < (pagesize - 1) %}
-            <li class="page-item"><a class="page-link"
-                                     href="{{ 'find_my_a?id={}&page={}'.format(id, page + 1) }}">{{ page + 1 }}</a></li>
-        {% endif %}
-        {% if page != pagesize %}
-            <li class="page-item"><a class="page-link">...</a></li>
-            <li class="page-item {% if page == pagesize %} disabled {% endif %}">
-                <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, pagesize) }}" aria-label="Next"
-                        {% if page == pagesize %} aria-disabled="true" {% endif %}>
-                    <span aria-hidden="true">{{ pagesize }}</span>
-                </a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+</header>
+<!-- Footer-->
 <footer class="bg-light py-5">
     <div class="container">
         <div class="small text-center text-muted">Copyright © 2020 - 찾아주 Cat! Dog!</div>
     </div>
 </footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<!-- Third party plugin JS-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+<!-- Core theme JS-->
+<script src="../static/js/scripts.js"></script>
 </body>
 </html>

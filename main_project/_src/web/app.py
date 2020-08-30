@@ -13,7 +13,6 @@ import os
 import re
 import sys
 import shutil
-import call_fun
 import math
 from numba import cuda
 from werkzeug.datastructures import ImmutableMultiDict
@@ -21,8 +20,8 @@ import tensorflow as tf
 from tensorflow import keras
 import re_run
 # path 설정
-sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_image_similarity')
-import predict_dog_data
+# sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_image_similarity')
+# import predict_dog_data
 # gpu_devices = tf.config.experimental.list_physical_devices('GPU')
 sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/dog_image_similarity')
 sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/re_id/code')
@@ -59,6 +58,7 @@ app.config['DROPZONE_UPLOAD_ON_CLICK'] = True
 app.config['DROPZONE_UPLOAD_ACTION'] = 'ask'
 app.config['DROPZONE_UPLOAD_BTN_ID'] = 'submit'
 app.config['DROPZONE_DEFAULT_MESSAGE'] = '사진 업로드: 클릭하거나 파일을 드래그해주세요.'
+app.config['DROPZONE_MAX_FILE_SIZE'] = 10
 ##################################################################
 dropzone = Dropzone(app)
 db = SQLAlchemy(app)
@@ -66,15 +66,15 @@ db = SQLAlchemy(app)
 global tempfname
 tempfname = ''
 ##################################################################
-
-""" login information"""
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 465
-#SMTP_PASSWORD = ""  # 비밀번호 초기 설정
-#pickle.dump(SMTP_PASSWORD, open("pw.pickle", 'wb'))
-SMTP_USER = "findmycatdog@gmail.com"
-SMTP_PASSWORD = pickle.load(open('pw.pickle', 'rb'))
-first = 1
+#
+# """ login information"""
+# SMTP_SERVER = "smtp.gmail.com"
+# SMTP_PORT = 465
+# SMTP_PASSWORD = ""  # 비밀번호 초기 설정
+# pickle.dump(SMTP_PASSWORD, open("pw.pickle", 'wb'))
+# SMTP_USER = "findmycatdog@gmail.com"
+# SMTP_PASSWORD = pickle.load(open('pw.pickle', 'rb'))
+# first = 1
 
 ##################################################################
 
@@ -88,9 +88,6 @@ class QueryLostAnimals(db.Model):
     filename = db.Column(db.String, unique=True)
 
 ##################################################################
-
-
-
 
 """ 사용자 요청 페이지 """
 @app.route('/')
@@ -115,45 +112,46 @@ def ask():
             db.session.commit()
 
             # 파일 저장
+
             fn = (time.replace('-', '.').replace(' ', '_').replace(':', '.') + '_' + str(qla.id) + '.' +
                   tempfname.split('.')[-1])
+            print('tempname =' ,tempfname)
+            print('fn= ', fn)
+
             oldname = os.path.join(app.config['UPLOADED_PATH'], tempfname)
             newname = os.path.join(app.config['UPLOADED_PATH'], fn)
             os.rename(oldname, newname)
             qla.filename = fn
             db.session.commit()
             shutil.copy(newname, os.path.join('./static/images/input_image', fn))
-            shutil.copy(newname, os.path.join('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list', fn))
+
+            query_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'
+            shutil.rmtree(query_path)
+            if not os.path.isdir(query_path):
+                os.mkdir(query_path)
+            shutil.copy(newname, os.path.join(query_path, fn))
+
+            # # email 보내는데 사용할 query image 저장
+            # copy_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/email'
+            # shutil.rmtree(copy_path)
+            # if not os.path.isdir(copy_path):
+            #     os.mkdir(copy_path)
+            # shutil.copy(newname,os.path.join(copy_path, fn))
 
             # 쿼리 이미지 분류기에 넘기기
-            count = 0
-            print('1')
+            # count = 0
             extract_similar_image_path.main(request.form['location'], request.form['date'], model)
-            print('call_2')
 
             # filtering된 image re_id 사용할 directory로 copy
             copy_image.main()
-            print('call_3')
 
             reid_query.main()
-            #call_fun.main(request.form['location'], request.form['date'], model)
-
-            # if first:
-            #     call_fun.main(request.form['location'],request.form['date'], first)
-            #     first = 0
-            # else: call_fun.main(request.form['location'],request.form['date'], first)
-            print('2')
 
             os.remove('./static/images/input_image'+'/'+fn)
-            os.remove('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'+'/'+fn)
+            # os.remove('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'+'/'+fn)
             # 작업 소요시간 확인
             print('소요된 시간 :' + str(datetime.now() - ttime))
-            count += 1
-
-            # tf.config.experimental.set_visible_devices([], 'GPU')
-            # device = cuda.get_current_device()
-            # device.reset()
-            # cuda.close()
+            # count += 1
 
             # 결과 페이지로 이동
             return redirect('/find_my_a?id=' + str(qla.id))
@@ -176,14 +174,19 @@ def answer():
 
         # 유사도 높은 이미지 DB에서 로드
         sims = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_web.csv', names=['rank', 'number'], header=0)
-        found = dbquery(db='protect_animals_url1', id=tuple(sims['number'].values))
-        pagesize = math.ceil(len(found) / ITEMPERPAGE)
-        found = sims.merge(pd.DataFrame(pd.DataFrame(found,
-                                                     columns=['no', 'number', 'kind', 'color', 'sex', 'neutralization',
-                                                              'age_weight', 'date', 'location', 'characteristic',
-                                                              'deadline', 'center_name', 'center_number',
-                                                              'center_address', 'image', 'url', 'time'])))
-        return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked,
+        if len(sims['number'].values) == 0:
+            return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked,
+                                   found=None, register=register,
+                                   pagesize=1)
+        else:
+            found = dbquery(db='protect_animals_url1', id=tuple(sims['number'].values))
+            pagesize = math.ceil(len(found) / ITEMPERPAGE)
+            found = sims.merge(pd.DataFrame(pd.DataFrame(found,
+                                                         columns=['no', 'number', 'kind', 'color', 'sex', 'neutralization',
+                                                                  'age_weight', 'date', 'location', 'characteristic',
+                                                                  'deadline', 'center_name', 'center_number',
+                                                                  'center_address', 'image', 'url', 'time'])))
+            return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked,
                                found=found[found.columns[1:]].values.tolist()[
                                      (page - 1) * ITEMPERPAGE:page * ITEMPERPAGE], register=register, pagesize = pagesize)
 
@@ -218,7 +221,7 @@ def dbquery(db=None, id=None, insert=False, query=None):
         # 사용자 요청 목록
         if db == 'query_lost_animals':
             cur.execute('SELECT * FROM {} WHERE id= {}'.format(db, id))
-        # 공고 데이터 DB
+        # 공고 데이터
         elif db == 'protect_animals_url1':
             cur.execute('SELECT * FROM {} WHERE number in {}'.format(db, id))
         # 사용자 push 요청 목록
@@ -229,36 +232,37 @@ def dbquery(db=None, id=None, insert=False, query=None):
         conn.close()
         return rows
 
-""" e-mail push """
-def send_mail(queryid, newfoundid):
-    # 사용자 id 및 찾은 공고번호 기반 DB 탐색
-    queryuser = list(dbquery(db='query_need_push', id=queryid)[0])
-    newfound = list(dbquery(db='protect_animals_url1', id=newfoundid))
-
-    # 푸시 알림을 신청한 사용자가 맞을 경우
-    if queryuser[2] == 1:
-        # message header
-        msg = MIMEMultipart()
-        msg["From"] = SMTP_USER
-        msg["To"] = queryuser[1]
-        msg["Subject"] = '찾아줘 CatDog: 유사한 개체가 탐지되었습니다.'
-
-        # message 본문
-        msg.attach(MIMEText(
-            '<html><body><h3>등록하신 개체와 유사한 개체가 탐지되었습니다.</h3><table border="1" bordercolor="#F8F8F8" align = "center"><thead bgcolor="#F4F4F4" align ="center"><tr><th rowspan="2"></th><th>공고번호</th><th>발견일자</th><th>발견장소</th><th colspan="2">공고기간</th><th>보호소</th><th>바로가기</th></tr><tr><th>공고 상 분류</th><th>색상</th><th>성별</th><th>중성화 여부</th><th>추정 연령</th><th>몸무게</th><th>특이사항</th></tr></thead><tbody align ="center">',
-            'html', 'utf-8'))
-        for item in newfound:
-            msg.attach(MIMEText(
-                '<tr><td rowspan="2"><img src="{}" height=100px></td><td>{}</td><td>{}</td><td>{}</td><td colspan="2">{}</td><td>{}</td><td><a href="{}"><b>공고</b></a></td></tr><tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(item[14], item[1], item[7], item[8], item[10], item[11], item[15], item[2], item[3], item[4], item[5], item[6].split('/')[0][:-1], item[6].split('/')[1][1:], item[9]),
-                'html', 'utf-8'))
-        msg.attach(MIMEText('</tbody></table></body></html>', 'html', 'utf-8'))
-
-        # 푸시 거부 로직 추가 필요
-
-        # send
-        with smtplib.SMTP_SSL(SMTP_SERVER) as s:
-            s.login(SMTP_USER, SMTP_PASSWORD)
-            s.sendmail(SMTP_USER, msg["To"], msg.as_string())
+# send_mail(쿼리 아이디, [공고번호 리스트])
+# """ e-mail push """
+# def send_mail(queryid, newfoundid):
+#     # 사용자 id 및 찾은 공고번호 기반 DB 탐색
+#     queryuser = list(dbquery(db='query_need_push', id=queryid)[0])
+#     newfound = list(dbquery(db='protect_animals_url1', id=newfoundid))
+#
+#     # 푸시 알림을 신청한 사용자가 맞을 경우
+#     if queryuser[2] == 1:
+#         # message header
+#         msg = MIMEMultipart()
+#         msg["From"] = SMTP_USER
+#         msg["To"] = queryuser[1]
+#         msg["Subject"] = '찾아줘 CatDog: 유사한 개체가 탐지되었습니다.'
+#
+#         # message 본문
+#         msg.attach(MIMEText(
+#             '<html><body><h3>등록하신 개체와 유사한 개체가 탐지되었습니다.</h3><table border="1" bordercolor="#F8F8F8" align = "center"><thead bgcolor="#F4F4F4" align ="center"><tr><th rowspan="2"></th><th>공고번호</th><th>발견일자</th><th>발견장소</th><th colspan="2">공고기간</th><th>보호소</th><th>바로가기</th></tr><tr><th>공고 상 분류</th><th>색상</th><th>성별</th><th>중성화 여부</th><th>추정 연령</th><th>몸무게</th><th>특이사항</th></tr></thead><tbody align ="center">',
+#             'html', 'utf-8'))
+#         for item in newfound:
+#             msg.attach(MIMEText(
+#                 '<tr><td rowspan="2"><img src="{}" height=100px></td><td>{}</td><td>{}</td><td>{}</td><td colspan="2">{}</td><td>{}</td><td><a href="{}"><b>공고</b></a></td></tr><tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(item[14], item[1], item[7], item[8], item[10], item[11], item[15], item[2], item[3], item[4], item[5], item[6].split('/')[0][:-1], item[6].split('/')[1][1:], item[9]),
+#                 'html', 'utf-8'))
+#         msg.attach(MIMEText('</tbody></table></body></html>', 'html', 'utf-8'))
+#
+#         # 푸시 거부 로직 추가 필요
+#
+#         # send
+#         with smtplib.SMTP_SSL(SMTP_SERVER) as s:
+#             s.login(SMTP_USER, SMTP_PASSWORD)
+#             s.sendmail(SMTP_USER, msg["To"], msg.as_string())
 
 ##################################################################
 
@@ -267,10 +271,9 @@ if __name__ == '__main__':
 #    pd.set_option('display.max_columns', None)
 #    pd.set_option('display.width', None)
 #    pd.set_option('display.max_colwidth', -1)
-
+    # host = '0.0.0.0', port = 5000
     app.run()
     #send_mail(72, ('경기-부천-2020-00733', '경북-경주-2020-00736'))
-
 """
 
 
