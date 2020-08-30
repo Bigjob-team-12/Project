@@ -124,11 +124,11 @@ def make_model(rand_seed, output_dir = 'C:/Users/kdan/BigJob12/main_project/_db/
     print('make_model1')
     tf.keras.backend.clear_session()
     # mobile = mobile
-    mobile = tf.keras.applications.mobilenet.MobileNet()
+    mobile = tf.keras.applications.MobileNetV2()
 
     # remove last 5 layers of model and add dense layer with 128 nodes and the prediction layer with size nodes
     # where size=number of classes
-    x = mobile.layers[-6].output
+    x = mobile.layers[-2].output
     x = Dense(128, kernel_regularizer=regularizers.l2(l=0.015), activation='relu')(x)
     x = Dropout(rate=.5, seed=rand_seed)(x)
     predictions = Dense(size, activation='softmax')(x)

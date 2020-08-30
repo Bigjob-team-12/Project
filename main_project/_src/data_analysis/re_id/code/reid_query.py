@@ -24,11 +24,8 @@ def load_network(network,name,which_epoch):
     return network
 
 ######################################################################
-# Extract feature
-# ----------------------
-#
 # Extract feature from  a trained model.
-#
+# ----------------------
 def fliplr(img):
     '''flip horizontal'''
     inv_idx = torch.arange(img.size(3) - 1, -1, -1).long()  # N x C x H x W
@@ -37,24 +34,18 @@ def fliplr(img):
 
 
 def extract_feature(model, dataloaders,ms):
+    '''extract image feature(to 512 vectors'''
     features = torch.FloatTensor()
-    count = 0
     for data in dataloaders:
         img, label = data
         n, c, h, w = img.size()
-        # count += n
-        # print(count)
-       # ff = torch.FloatTensor(n, 512).zero_().cuda()
+       # ff = torch.FloatTensor(n, 512).zero_().cuda()  # use gpu
         ff = torch.FloatTensor(n, 512).zero_()
-
-        #     start = time.time()
         for i in range(2):
             if (i == 1):
                 img = fliplr(img)
-
-            #input_img = Variable(img.cuda())
+            #input_img = Variable(img.cuda())   # use gpu
             input_img = Variable(img)
-
             for scale in ms:
                 if scale != 1:
                     # bicubic is only  available in pytorch>= 1.1
@@ -62,31 +53,27 @@ def extract_feature(model, dataloaders,ms):
                                                           align_corners=False)
                 outputs = model(input_img)
                 ff += outputs
-        #    print("time = ",(time.time() - start)*1000)
         # norm feature
         fnorm = torch.norm(ff, p=2, dim=1, keepdim=True)
         ff = ff.div(fnorm.expand_as(ff))
         features = torch.cat((features, ff.data.cpu()), 0)
     return features
 
-
+######################################################################
+# main code
+# ----------------------
 def main(first = True):
-    # cuda.select_device(0)
-    # cuda.close()
-
     ImageFile.LOAD_TRUNCATED_IMAGES = True
-
     ######################################################################
     # Options
     # --------
-    # gpu_ids='0'
+    # gpu_ids='0'  # use gpu
     which_epoch='last'
     test_dir='C:/Users/kdan/BigJob12/main_project/_db/data/model_data'
     name='ft_ResNet50'
     batchsize =32
     ms ='1'
 
-    ###load config###
     # load the training config
     config_path = os.path.join('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/re_id/code/model', name, 'opts.yaml')
     with open(config_path, 'r') as stream:
@@ -96,6 +83,9 @@ def main(first = True):
     if 'nclasses' in config:  # tp compatible with old config files
         nclasses = config['nclasses']
 
+    ######################################################################
+    # gpu Options
+    # --------
     # str_ids = gpu_ids.split(',')
     # gpu_ids = []
     # for str_id in str_ids:
@@ -124,21 +114,19 @@ def main(first = True):
 
     ])
 
-    data_dir = test_dir
     ######################################################################
     # Load data
+    data_dir = test_dir
     image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms) for x in ['query']}
-    # print(image_datasets)
     dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchsize,
                                                   shuffle=False, num_workers=0) for x in ['query']}
     class_names = image_datasets['query'].classes
     use_gpu = torch.cuda.is_available()
-    ######################################################################
+
     # Load Collected data Trained model
     print('-------test-----------')
     model_structure = ft_net(nclasses, stride=stride)
     model = load_network(model_structure,name,which_epoch)
-
 
     # Remove the final fc layer and classifier layer
     model.classifier.classifier = nn.Sequential()
@@ -153,7 +141,6 @@ def main(first = True):
     # Extract feature
     with torch.no_grad():
         query_feature = extract_feature(model, dataloaders['query'], ms)
-        #print('que_fea = ', query_feature)
     print(time.time() - start_load)
 
     # Save to Matlab for check
