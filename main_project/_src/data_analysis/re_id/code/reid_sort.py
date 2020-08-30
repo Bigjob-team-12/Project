@@ -102,21 +102,21 @@ def main(result,image_datasets,mode, first = True):
     print('Top 10 images are as follow:')
     try:
         if num > 10:
-            re_id_result = [image_datasets_gallery[mode_path].imgs[index[_]][0].split('\\')[-1][:-4].split('_')[-1]  for _ in range(500)]
-            print(re_id_result)
+            re_id_result = [image_datasets_gallery[mode_path].imgs[index[_]][0].split('\\')[-1][:-4].split('_')[-1]  for _ in range(1000)]
+            print('re_id_result=',re_id_result)
+            print('re_id_result=',len(re_id_result))
 
-            
-            #### 수정 필요
             tmp_result = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_reid.csv')['file_name'].apply(lambda x : x.split('_')[-1][:-4]).tolist()
-
-            print(tmp_result)
+            print('tmp_result=',tmp_result)
+            print('tmp_result=',len(tmp_result))
 
             result = []
 
             for _ in re_id_result:
                 if _ in tmp_result: result.append(_)
-
-            print(result)
+            #
+            print('result = ', result)
+            print('result = ', len(result))
 
             if first:
                 pd.DataFrame(result).to_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_email.csv')

@@ -65,7 +65,6 @@ def dbquery(db=None, id=None, insert=False, query=None):
         return rows
 """ e-mail push """
 def send_mail(newfoundid, queryid = 365):
-    print('-' * 50)
     # 사용자 id 및 찾은 공고번호 기반 DB 탐색
     queryuser = list(dbquery(db='query_need_push', id=queryid)[0])
     if len(newfoundid) == 0: return # 같은게 없을 경우
@@ -81,7 +80,7 @@ def send_mail(newfoundid, queryid = 365):
 
         # message 본문
         msg.attach(MIMEText(
-            '<html><body><h3>등록하신 개체와 유사한 개체가 탐지되었습니다.</h3><table border="1" bordercolor="#F8F8F8" align = "center"><thead bgcolor="#F4F4F4" align ="center"><tr><th rowspan="2"></th><th>공고번호</th><th>발견일자</th><th>발견장소</th><th colspan="2">공고기간</th><th>보호소</th><th>바로가기</th></tr><tr><th>공고 상 분류</th><th>색상</th><th>성별</th><th>중성화 여부</th><th>추정 연령</th><th>몸무게</th><th>특이사항</th></tr></thead><tbody align ="center">',
+            '<html><head><style> table { border-collapse: separate; border-spacing: 1px; text-align: center; line-height: 1.5; margin: 20px 10px; font-family: 맑은 고딕; } thead { background-color: powderblue; bordercolor: rgba(255, 255, 255, 0.7); color: rgba(0, 0, 0, 0.7); } tbody { background-color: aliceblue; align: center; font-size: small } th { padding: 10px; } </style> </head><body><h3>등록하신 개체와 유사한 개체가 탐지되었습니다.</h3><table><thead><tr><th rowspan="2"></th><th>공고번호</th><th>발견일자</th><th>발견장소</th><th colspan="2">공고기간</th><th>보호소</th><th>바로가기</th></tr><tr><th>공고 상 분류</th><th>색상</th><th>성별</th><th>중성화 여부</th><th>추정 연령</th><th>몸무게</th><th>특이사항</th></tr></thead><tbody>',
             'html', 'utf-8'))
         for item in newfound:
             msg.attach(MIMEText(
@@ -97,9 +96,6 @@ def send_mail(newfoundid, queryid = 365):
             s.sendmail(SMTP_USER, msg["To"], msg.as_string())
 def load_data():
     data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/data.csv', encoding='cp949')
-    #
-    # with open('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/data.pickle', 'rb') as f:
-    #     data = pickle.load(f)
     return data
 def compare_list():
     email_list = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_email.csv')['0'].tolist()
@@ -125,5 +121,8 @@ if __name__ == '__main__':
     reid_query.main(False)
 
     compare_lst = compare_list()
+
+    print('-' * 10 + '추가된 사진' + '-' * 10)
+    print(compare_lst)
 
     send_mail(tuple(compare_lst))

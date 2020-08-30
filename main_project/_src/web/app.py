@@ -124,6 +124,7 @@ def ask():
             qla.filename = fn
             db.session.commit()
             shutil.copy(newname, os.path.join('./static/images/input_image', fn))
+
             query_path = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data/query/query_list'
             shutil.rmtree(query_path)
             if not os.path.isdir(query_path):
@@ -173,14 +174,19 @@ def answer():
 
         # 유사도 높은 이미지 DB에서 로드
         sims = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_web.csv', names=['rank', 'number'], header=0)
-        found = dbquery(db='protect_animals_url1', id=tuple(sims['number'].values))
-        pagesize = math.ceil(len(found) / ITEMPERPAGE)
-        found = sims.merge(pd.DataFrame(pd.DataFrame(found,
-                                                     columns=['no', 'number', 'kind', 'color', 'sex', 'neutralization',
-                                                              'age_weight', 'date', 'location', 'characteristic',
-                                                              'deadline', 'center_name', 'center_number',
-                                                              'center_address', 'image', 'url', 'time'])))
-        return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked,
+        if len(sims['number'].values) == 0:
+            return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked,
+                                   found=None, register=register,
+                                   pagesize=1)
+        else:
+            found = dbquery(db='protect_animals_url1', id=tuple(sims['number'].values))
+            pagesize = math.ceil(len(found) / ITEMPERPAGE)
+            found = sims.merge(pd.DataFrame(pd.DataFrame(found,
+                                                         columns=['no', 'number', 'kind', 'color', 'sex', 'neutralization',
+                                                                  'age_weight', 'date', 'location', 'characteristic',
+                                                                  'deadline', 'center_name', 'center_number',
+                                                                  'center_address', 'image', 'url', 'time'])))
+            return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked,
                                found=found[found.columns[1:]].values.tolist()[
                                      (page - 1) * ITEMPERPAGE:page * ITEMPERPAGE], register=register, pagesize = pagesize)
 
