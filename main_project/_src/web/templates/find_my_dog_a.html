@@ -1,33 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta name="description" content=""/>
     <meta name="author" content=""/>
     <title>찾아주 Cat! Dog! </title>
+
+    <!-- bootstrap 및 icon load -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
-    {{ dropzone.load_css() }}
-    {{ dropzone.style('border: 2px dashed #fab6a3; background-color: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .75); margin: 10px 0 10px; min-height: 20vh; width: 600px') }}
+
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="../static/assets/img/favicon.ico"/>
+
     <!-- Font Awesome icons (free version)-->
     <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+
     <!-- Google fonts-->
     <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"
           rel="stylesheet" type="text/css"/>
+
     <!-- Third party plugin CSS-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
           rel="stylesheet"/>
+
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="../static/css/styles.css" rel="stylesheet"/>
 </head>
+
 <body id="page-top">
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
@@ -43,7 +49,8 @@
         </div>
     </div>
 </nav>
-<!-- Masthead-->
+
+<!-- 상단 영역 -->
 <header class="masthead" style="height: auto">
     <!-- 사용자 요청 정보 -->
     <div class="container h-auto" style="color: rgba(255, 255, 255, 0.7)">
@@ -53,6 +60,7 @@
                          height=80vh> {{ asked[2] }}
                     / {{ asked[3] }}</h4>
             </div>
+
             <!-- 이메일 푸시 알림 신청 -->
             <div class="col-auto align-items-center justify-content-center text-center">
                 <form class="form-inline" method="POST">
@@ -74,15 +82,16 @@
             </div>
         </div>
     </div>
+
     <!-- 결과 데이터 10건 노출 -->
     <div class="container h-auto">
-        {% if found == None %}
+        {% if found == None %} <!-- 결과 없음 예외 처리 -->
         <h4 style = "text-align:center; color: rgba(255, 255, 255, 0.75) ">검색된 결과가 없습니다.</h4>
         {% else %}
         <div class="row align-items-center justify-content-center text-center" style="font-size: small">
-            <!-- 붙여서 노출하려면 card-group, 한 줄 5건 고정하려면 card-deck -->
             <div class="container">
                 <div class="card-deck">
+                    <!-- 개별 결과 데이터 1 ~ 5 -->
                     {% for _ in found[0:5] %}
                         <div class="card" style="width: 20vw;">
                             <img src="{{ _[14] }}" class="card-img-top"
@@ -119,6 +128,7 @@
                 </div>
                 <p style="font-size: 1em"> &nbsp; </p>
                 <div class="card-deck">
+                    <!-- 개별 결과 데이터 6 ~ 10 -->
                     {% for _ in found[5:] %}
                         <div class="card" style="width: 20vw;">
                             <img src="{{ _[14] }}" class="card-img-top"
@@ -155,9 +165,11 @@
                 </div>
                 <p style="font-size: 1em"> &nbsp; </p>
             </div>
+
             <!-- pagination -->
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
+                    <!-- 첫 페이지 -->
                     {% if page != 1 %}
                         <li class="page-item {% if page == 1 %} disabled {% endif %}">
                             <a class="page-link" href="{{ 'find_my_a?id={}&page={}'.format(id, 1) }}"
@@ -168,17 +180,25 @@
                         </a>
                         </li>
                     {% endif %}
+
+                    <!-- 이전 페이지 -->
                     {% if page > 2 %}
                         <li class="page-item"><a class="page-link"
                                                  href="{{ 'find_my_a?id={}&page={}'.format(id, page - 1) }}">{{ page - 1 }}</a>
                         </li>
                     {% endif %}
+
+                    <!-- 현재 페이지 -->
                     <li class="page-item"><a class="page-link">{{ page }}</a></li>
+
+                    <!-- 다음 페이지 -->
                     {% if page < (pagesize - 1) %}
                         <li class="page-item"><a class="page-link"
                                                  href="{{ 'find_my_a?id={}&page={}'.format(id, page + 1) }}">{{ page + 1 }}</a>
                         </li>
                     {% endif %}
+
+                    <!-- 마지막 페이지 -->
                     {% if page != pagesize %}
                         <li class="page-item"><a class="page-link">...</a></li>
                         <li class="page-item {% if page == pagesize %} disabled {% endif %}">
@@ -191,16 +211,19 @@
                     {% endif %}
                 </ul>
             </nav>
+
         </div>
         {% endif %}
     </div>
 </header>
+
 <!-- Footer-->
 <footer class="bg-light py-5">
     <div class="container">
         <div class="small text-center text-muted">Copyright © 2020 - 찾아주 Cat! Dog!</div>
     </div>
 </footer>
+
 <!-- Bootstrap core JS-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
