@@ -24,23 +24,23 @@ $ main_project
 ├─ _db
 │   └─ data
 │       ├─ crawling_data
-│       │       └─ [개]
+│       │       └─ [개]  
 │       ├─ model_data
 │       │       ├─ gallery
-│       │       │     └─ gallery_list
+│       │       │     └─ gallery_list # Temp directory for gallery images(option) 
 │       │       ├─ query
-│       │       │     └─ query_list
+│       │       │     └─ query_list  # Temp directory for query image
 │       │       └─ working
-│       │             ├─ dog_breeds.txt
-│       │             ├─ result.csv
-│       │             ├─ to_reid.csv
-│       │             ├─ to_web.csv
-│       │             └─ tmp.h5
+│       │             ├─ dog_breeds.txt  # Image statistics used in training 
+│       │             ├─ result.csv   #   
+│       │             ├─ to_reid.csv   # 
+│       │             ├─ to_web.csv   # List of images sent to the web
+│       │             └─ tmp.h5   # weights for classification model 
 │       └─ preprocessed_data
-│               └─ dog_class ─ image
+│               └─ dog_class ─ image   # Preprocessed image using YOLO-v4
 └─ _src
      ├─ batch
-     │     └─ update_data.bat
+     │     └─ update_data.bat   # Batch file for crawling and Preprocessing 'post' images.    
      ├─ data_analysis
      │     ├─ dog_image_similarity
      │     │          ├─ copy_image.py
@@ -50,11 +50,18 @@ $ main_project
      │     │          └─ predict_dog_data.py
      │     └─ re_id
      │           └─ code
-     │                └─ *
+     │                ├─ reid_query.py   # Extract query image feature (512 vectors)
+     │                ├─ reid_gallery.py  # Extract gallery image feature (512 vectors)
+     │                ├─ reid_sort.py   # Calculate image similarity using cosine distance and sorting index   
+     │                ├─ train.py   # To train model 
+     │                └─ model.py   # Model structure for train.py
+     │                
      ├─ data_analysis
      │     └─ data_collection_zooseyo.py
      ├─ data_processing
      │     └─ image_data_download.py
+     │     └─ yolo_v4
+     │            └─  detect.py   # Detect dogs and cats. Crop target image and save 
      └─ web
          ├─ static
          │     ├─ bootstrap
@@ -66,7 +73,6 @@ $ main_project
          │      ├─ find_my_dog_q.html
          │      └─ index.html
          ├─ app.py
-         ├─ call_fun.py
          └─ database.sqlite
 ```
 
@@ -95,8 +101,11 @@ $ main_project
   - 임의의 이미지에 대해 공고 이미지와 유사도 측정 후 유사한 이미지 N개 출력
 - **`200817-200821`**
   - 웹 디자인 구상
-  - Object detection & Image crop하는 code 작성 (faster R-CNN)   
-- **`200824-200828`**
+  - Object detection & Image crop하는 code 작성 (Using faster R-CNN)   
+- **`200824-200831`**
   - flow diagram 작성
   - Demo 용 웹 페이지 생성(flask, DB 연동)
-  - 분류기와 re-id 
+  - 분류기와 re-id 연결
+  - Object detection & Image crop(이미지 전처리)에 YOLO-V4 사용
+  - 날짜, 지역 필터링 적용
+  - 이메일 알림 기능 추가
