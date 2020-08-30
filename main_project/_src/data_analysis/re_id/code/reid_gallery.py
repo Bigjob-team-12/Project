@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.backends.cudnn as cudnn
-from torchvision import datasets, models, transforms
+from torchvision import datasets, transforms
 import os
 import scipy.io
 import yaml
@@ -13,7 +13,6 @@ import math
 from model import ft_net
 from PIL import ImageFile
 import pandas as pd
-import numpy as np
 from numba import cuda
 import time
 ######################################################################
@@ -25,73 +24,58 @@ def load_network(network,name,which_epoch):
     return network
 
 ######################################################################
-# Extract feature
+# Extract feature from a trained model.
 # ----------------------
-#
-# Extract feature from  a trained model.
-#
 def fliplr(img):
     '''flip horizontal'''
     inv_idx = torch.arange(img.size(3) - 1, -1, -1).long()  # N x C x H x W
     img_flip = img.index_select(3, inv_idx)
     return img_flip
 
-
 def extract_feature(model, dataloaders,ms):
+    '''Extract image feature'''
     features = torch.FloatTensor()
-    count = 0
     for data in dataloaders:
         img, label = data
         n, c, h, w = img.size()
-        # count += n
-        # print(count)
         ff = torch.FloatTensor(n, 512).zero_().cuda()
-
-        #     start = time.time()
         for i in range(2):
             if (i == 1):
                 img = fliplr(img)
-
             input_img = Variable(img.cuda())
-
             for scale in ms:
                 if scale != 1:
-                    # bicubic is only  available in pytorch>= 1.1
                     input_img = nn.functional.interpolate(input_img, scale_factor=scale, mode='bicubic',
                                                           align_corners=False)
                 outputs = model(input_img)
                 ff += outputs
-        #    print("time = ",(time.time() - start)*1000)
         # norm feature
         fnorm = torch.norm(ff, p=2, dim=1, keepdim=True)
         ff = ff.div(fnorm.expand_as(ff))
         features = torch.cat((features, ff.data.cpu()), 0)
     return features
 
-
+######################################################################
+# main code
+# ----------------------
 def main(mode):
-    cuda.select_device(0)
-    cuda.close()
-
     ImageFile.LOAD_TRUNCATED_IMAGES = True
-
     ######################################################################
     # Options
     # --------
     gpu_ids='0'
     which_epoch='last'
-    if mode=='all':
-        test_dir = 'C:/Users/kdan/BigJob12/main_project/_db/data'  # 전체
-        mode_path = 'preprocessed_data'
-    else:
-        test_dir = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data'
-        mode_path = 'gallery'
-
     name='ft_ResNet50'
     batchsize =32
     ms ='1'
 
-    ###load config###
+    if mode=='all': # extract all 'post images' feature
+        test_dir = 'C:/Users/kdan/BigJob12/main_project/_db/data'
+        mode_path = 'preprocessed_data'
+    else: # extract certain 'post images' feature
+        test_dir = 'C:/Users/kdan/BigJob12/main_project/_db/data/model_data'
+        mode_path = 'gallery'
+
     # load the training config
     config_path = os.path.join('C:/Users/kdan/BigJob12/main_project/_src/data_analysis/re_id/code/model', name, 'opts.yaml')
     with open(config_path, 'r') as stream:
@@ -101,6 +85,7 @@ def main(mode):
     if 'nclasses' in config:  # tp compatible with old config files
         nclasses = config['nclasses']
 
+    # option for gpu,ms
     str_ids = gpu_ids.split(',')
     gpu_ids = []
     for str_id in str_ids:
@@ -121,21 +106,16 @@ def main(mode):
         cudnn.benchmark = True
 
     ######################################################################
-    # Data transform
+    # Setting Data transform
+    # ----------------------
     data_transforms = transforms.Compose([
         transforms.Resize((256, 128), interpolation=3),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-
     ])
-
-    data_dir = test_dir
-
     ######################################################################
-    # Load data
+    # Load data using dataloaders
     image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms) for x in [mode_path]}
-
-    # print(image_datasets)
     dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batchsize,
                                                   shuffle=False, num_workers=0) for x in [mode_path]}
     use_gpu = torch.cuda.is_available()
