@@ -64,19 +64,44 @@ $ main_project
      │            └─  detect.py   # Detect dogs and cats. Crop target image and save 
      └─ web
          ├─ static
-         │     ├─ bootstrap
+         │     └─ assets
+         │           └─ img # Image and Icon for Web Design
+         │     ├─ bootstrap # Bootstrap CSS, JS Files
+         │     ├─ css # CSS files for Web Design
+         │     ├─ js # JavaScript files for Web Design
          │     └─ images
          │           ├─ input_image
-         │           └─ uploads
+         │           └─ uploads # User Query Images
          ├─ templates
-         │      ├─ find_my_dog_a.html
-         │      ├─ find_my_dog_q.html
+         │      ├─ find_my_dog_a.html  # Result Page
          │      └─ index.html   # Main page
-         ├─ app.py
-         └─ database.sqlite  # DB 
+         └─ app.py # Web Application (Calls Models)
 ```
-
-
+#### requirement
+python==3.8 <br>
+pytorch==1.6.0 (window, conda, cuda==10.1) conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
+```
+absl-py==0.10.0
+easydict==1.9
+Flask==1.1.2
+Flask-Dropzone==1.5.4
+Flask-SQLAlchemy==2.4.4
+matplotlib==3.2.2
+numba==0.50.1
+numpy==1.18.5
+opencv-python==4.4.0.42
+pandas==1.0.5
+pillow==7.2.0
+pretrainedmodels==0.7.4
+pymysql==0.9.2
+scipy==1.4.1
+tensorflow==2.3.0 
+torchvision==0.7.0 
+tqdm==4.47.0
+urllib3==1.25.9
+werkzeug==1.0.1
+yaml==0.2.5
+```
 #### 프로젝트 진행 과정
 
 - **`200706-200710`**
