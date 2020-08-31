@@ -64,16 +64,18 @@ $ main_project
      │            └─  detect.py   # Detect dogs and cats. Crop target image and save 
      └─ web
          ├─ static
-         │     ├─ bootstrap
+         │     └─ assets
+         │           └─ img # Image and Icon for Web Design
+         │     ├─ bootstrap # Bootstrap CSS, JS Files
+         │     ├─ css # CSS files for Web Design
+         │     ├─ js # JavaScript files for Web Design
          │     └─ images
          │           ├─ input_image
-         │           └─ uploads
+         │           └─ uploads # User Query Images
          ├─ templates
-         │      ├─ find_my_dog_a.html
-         │      ├─ find_my_dog_q.html
+         │      ├─ find_my_dog_a.html  # Result Page
          │      └─ index.html   # Main page
-         ├─ app.py
-         └─ database.sqlite  # DB 
+         └─ app.py # Web Application (Calls Models)
 ```
 
 
