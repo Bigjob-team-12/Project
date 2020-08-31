@@ -2,12 +2,6 @@ import pymysql
 import urllib.request
 import os
 import socket
-import sys
-import tensorflow as tf
-from tensorflow.python.saved_model import tag_constants
-# path 설정
-# sys.path.append('C:/Users/kdan/BigJob12/main_project/_src/data_processing/yolo_v4')
-# import detect
 
 # set download timeout
 socket.setdefaulttimeout(30)
@@ -15,10 +9,6 @@ socket.setdefaulttimeout(30)
 # DB connect
 conn = pymysql.connect(host='localhost', user='root', password='bigjob12',
                        db='project', charset='utf8')
-# #YOLO weights 경로
-# weights = 'C:/Users/kdan/BigJob12/main_project/_src/data_processing/yolo_v4/checkpoints/yolov4-416'
-# saved_model_loaded = tf.saved_model.load(weights, tags=[tag_constants.SERVING])
-
 
 def load_image():
     '''
@@ -66,8 +56,6 @@ def download_image(images):
                 break
             else:
                 urllib.request.urlretrieve(url, tmp_path + '/' + class_name + '_' + number + ".jpg")
-                # img_path= tmp_path + '/' + class_name + '_' + number + ".jpg"
-                # detect.main(img_path, saved_model_loaded)
         except:
             # 해당 file remove
             if os.path.isfile(tmp_path + '/' + class_name + '_' + number + ".jpg"):

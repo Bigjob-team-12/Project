@@ -37,14 +37,20 @@ def load_data():
 def cos_sim(A, B):
     '''
     A,B의 cosine similarity
-    :param A:
-    :param B:
     :return: A,B의 cosine similarity
     '''
     return dot(A, B) / (norm(A) * norm(B))
 def euc_sim(A, B):
+    '''
+    A,B의 euclidean distance 계산
+    :return: A,B의 euclidean distance
+    '''
     return -distance.euclidean(A, B)
 def pearson(A, B):
+    '''
+    A,B의 pearson correlation 계산
+    :return: A,B의 pearson correlation
+    '''
     return pearsonr(A, B)
 def load_similar_images(data, file_name, path, func = cos_sim):
     '''
@@ -53,7 +59,7 @@ def load_similar_images(data, file_name, path, func = cos_sim):
     :param path:
     :return: file list, image list
     '''
-    # input image와 cosine 유사도가 높은 10개의 file list
+    # input image와 유사도가 높은 10개의 file list
     file_lst = data.apply(lambda x: func(x, data.loc[file_name]), axis=1).sort_values(ascending=False)[:11].index
     # file list의 image 불러오기
     img_lst = []

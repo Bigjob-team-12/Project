@@ -1,7 +1,10 @@
 import shutil
 import os
 
-if __name__ == '__main__':
+def main():
+    '''
+    crawling data to preprocessed
+    '''
     start_path = '../../../_db/data/crawling_data/[개]/'
     end_path = '../../../_db/data/Preprocessed_data/'
 
@@ -15,4 +18,7 @@ if __name__ == '__main__':
 
         for file in file_lst:
             print(file)
-            shutil.move(start_path + _class + '/' + file,end_path + _class + '/' + file)
+            shutil.move(start_path + _class + '/' + file, end_path + _class + '/' + file)
+
+if __name__ == '__main__':
+    main()

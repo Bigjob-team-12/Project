@@ -154,88 +154,9 @@ def make_predictions(test_gen, t_steps, model):
     :return: predict
     '''
     test_gen.reset()
-    # model_path=os.path.join(output_dir,'tmp.h5')
-    # print('test2')
-    # # load model weight
-    # model.load_weights(model_path)
-    print('test3')
-    # pred=model.predict_generator(test_gen, steps=t_steps,verbose=1) # make predictions on the test set
-
     pred = model.predict(test_gen)
-    print('test4')
-
-    # del model
-    # tf.keras.backend.clear_session()
 
     return pred
-def display_pred(output_dir, pred, t_files, t_labels, class_list):
-    # t_files are the test files, t_labels are the class label associated with the test file
-    # class_list is a list of classes
-    trials = len(t_files)  # number of predictions made should be same as len(t_files)
-    errors = 0
-    prob_list = []
-    true_class = []
-    pred_class = []
-    file_list = []
-    x_list = []
-    index_list = []
-    pr_list = []
-    error_msg = ''
-    for i in range(0, trials):
-        p_c_num = pred[i].argmax()  # the index with the highest prediction value
-        if p_c_num != t_labels[i]:  # if the predicted class is not the same as the test label it is an error
-            errors = errors + 1
-            file_list.append(t_files[i])  # list of file names that are in error
-            true_class.append(class_list[t_labels[i]])  # list classes that have an eror
-            pred_class.append(class_list[p_c_num])  # class the prediction selected
-            prob_list.append(100 * pred[i][p_c_num])  # probability of the predicted class
-            add_msg = '{0:^24s}{1:5s}{2:^20s}\n'.format(class_list[t_labels[i]], ' ', t_files[i])
-            error_msg = error_msg + add_msg
-
-    accuracy = 100 * (trials - errors) / trials
-    print('\n There were {0} errors in {1} trials for an accuracy of {2:7.3f}'.format(errors, trials, accuracy, ),
-          flush=True)
-    if errors <= 25:
-        msg = '{0}{1:^24s}{0:3s}{2:^20s}{0:3s}{3:20s}{0:3s}{4}'
-        print(msg.format(' ', 'File Name', 'True Class', 'Predicted Class', 'Probability'))
-        for i in range(0, errors):
-            msg = '{0}{1:^24s}{0:3s}{2:^20s}{0:3s}{3:20s}{0:5s}{4:^6.2f}'
-            print(msg.format(' ', file_list[i], true_class[i], pred_class[i], prob_list[i]))
-    else:
-        print('with {0} errors the full error list will not be printed'.format(errors))
-    acc = '{0:6.2f}'.format(accuracy)
-    header = 'Classification There were {0} errors in {1} tests for an accuracy of {2} using a model\n'.format(errors, trials, acc)
-    header = header + '{0:^24s}{1:5s}{2:^20s}\n'.format('CLASS', ' ', 'FILENAME')
-    error_msg = header + error_msg
-    file_name = 'error list-' + acc + '.txt'
-    print('\n file {0} containing the list of errors has been saved to {1}'.format(file_name, output_dir))
-    file_path = os.path.join(output_dir, file_name)
-    f = open(file_path, 'w')
-    f.write(error_msg)
-    f.close()
-    for c in class_list:
-        count = true_class.count(c)
-        x_list.append(count)
-        pr_list.append(c)
-    for i in range(0, len(x_list)):  # only plot classes that have errors
-        if x_list[i] == 0:
-            index_list.append(i)
-    for i in sorted(index_list, reverse=True):  # delete classes with no errors
-        del x_list[i]
-        del pr_list[i]  # use pr_list - can't change class_list must keep it fixed
-    fig = plt.figure()
-    fig.set_figheight(len(pr_list) / 4)
-    fig.set_figwidth(6)
-    plt.style.use('fivethirtyeight')
-    for i in range(0, len(pr_list)):
-        c = pr_list[i]
-        x = x_list[i]
-        plt.barh(c, x, )
-        plt.title('Errors by class')
-    plt.show()
-    time.sleep(5.0)
-
-    return accuracy
 def save_predicted_value_as_csv(predict, test_labels, test_files, class_list, output_dir):
     '''
     save predict
@@ -287,8 +208,6 @@ def TF2_classify(source_dir,output_dir,image_size=224,rand_seed=128):
     '''
     # load test data
     test_data, test_labels, test_files, class_list = get_data_sets(source_dir,image_size)
-    # test data eda
-    # print_data(test_labels, class_list)
 
     t_steps, t_batch_size = get_steps(test_data)
     test_gen = make_generators(test_data, t_batch_size)
@@ -302,8 +221,6 @@ def TF2_classify(source_dir,output_dir,image_size=224,rand_seed=128):
 if __name__ == '__main__':
     # test data directory
     source_dir = '../../../_db/data/Crawling_data/[개]'
-    # source_dir = '../../../_db/data/Preprocessed_data'
-    # source_dir = '../../../_db/data/input_query/input/dog_data/ours_dog/test'
     # model directory
     output_dir='../../../_db/data/model_data/working'
     image_size=224

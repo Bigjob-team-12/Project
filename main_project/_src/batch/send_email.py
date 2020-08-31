@@ -29,45 +29,64 @@ first = 1
 # 맨처음 결과와 다른 이미지(email image) => to_web csv  이랑 지금 파일이랑
 # 메일 보내기
 
-""" DB query """
-def dbquery(db=None, id=None, insert=False, query=None):
+def load_data():
+    '''
+    사용자 지역, 날짜 불러오기
+    :return: 지역, 날짜
+    '''
+    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/data.csv', encoding='cp949')
+    return data
+def compare_list():
+    '''
+    Check for updated information
+    :return: updated data
+    '''
+    email_list = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_email.csv')['0'].tolist()
+    update_list = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_web.csv')['0'].tolist()
+    result = []
+
+    for _ in update_list:
+        if _ in email_list:
+            pass
+        else: result.append(_)
+
+    return result
+def dbquery(db=None, id=None):
+    '''
+    Loading data from DB
+    :param db: 사용할 table
+    :param id: email index id
+    :return: 필요한 DB data
+    '''
     conn = pymysql.connect(host='localhost', user='root', password='bigjob12', db='project', charset='utf8')
     cur = conn.cursor()
 
-    # insert
-    if insert == True:
-        cur.execute(query)
-        conn.commit()
-        conn.close()
-        return
+    # 사용자 요청 목록
+    if db == 'protect_animals_url1':
+        if len(id) == 1:
+            id += id
+            cur.execute('SELECT * FROM {} WHERE number in {}'.format(db, id))
+        else:
+            cur.execute('SELECT * FROM {} WHERE number in {}'.format(db, id))
+    # 사용자 push 요청 목록
+    elif db == 'query_need_push':
+        cur.execute('SELECT * FROM {} WHERE id= {}'.format(db, id))
 
-    # select
-    else:
-        # 사용자 요청 목록
-        if db == 'query_lost_animals':
-            cur.execute('SELECT * FROM {} WHERE id= {}'.format(db, id))
-        # 공고 데이터
-        elif db == 'protect_animals_url1':
-            if len(id) == 1:
-                id += id
-                print('SELECT * FROM {} WHERE id= {}'.format(db, id))
-                cur.execute('SELECT * FROM {} WHERE number in {}'.format(db, id))
-            else:
-                print('SELECT * FROM {} WHERE id= {}'.format(db, id))
-                cur.execute('SELECT * FROM {} WHERE number in {}'.format(db, id))
-
-        # 사용자 push 요청 목록
-        elif db == 'query_need_push':
-            cur.execute('SELECT * FROM {} WHERE id= {}'.format(db, id))
-
-        rows = cur.fetchall()
-        conn.close()
-        return rows
-""" e-mail push """
+    rows = cur.fetchall()
+    conn.close()
+    return rows
 def send_mail(newfoundid, queryid = 365):
+    '''
+    Email updated information
+    :param newfoundid: updated된 image list
+    :param queryid: email index id
+    '''
     # 사용자 id 및 찾은 공고번호 기반 DB 탐색
     queryuser = list(dbquery(db='query_need_push', id=queryid)[0])
-    if len(newfoundid) == 0: return # 같은게 없을 경우
+
+    # update 내용이 없을 경우
+    if len(newfoundid) == 0: return
+
     newfound = list(dbquery(db='protect_animals_url1', id=newfoundid))
 
     # 푸시 알림을 신청한 사용자가 맞을 경우
@@ -94,35 +113,26 @@ def send_mail(newfoundid, queryid = 365):
         with smtplib.SMTP_SSL(SMTP_SERVER) as s:
             s.login(SMTP_USER, SMTP_PASSWORD)
             s.sendmail(SMTP_USER, msg["To"], msg.as_string())
-def load_data():
-    data = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/data.csv', encoding='cp949')
-    return data
-def compare_list():
-    email_list = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_email.csv')['0'].tolist()
-    update_list = pd.read_csv('C:/Users/kdan/BigJob12/main_project/_db/data/model_data/working/to_web.csv')['0'].tolist()
-    result = []
-
-    for _ in update_list:
-        if _ in email_list:
-            pass
-        else: result.append(_)
-
-    return result
 
 if __name__ == '__main__':
+    # 사용자 meta data(지역, 날짜)
     loc, t = load_data()
-
     print(loc, t)
 
+    # 사용자 meta data & 품종분류기를 바탕으로 image filtering
     extract_similar_image_path.main(loc, t, model)
 
+    # re_id에 필요한 image file copy
     copy_image.main()
 
+    # filtering된 image 중 re_id를 통해 유사한 image 추출
     reid_query.main(False)
 
+    # update된 image 유무 확인
     compare_lst = compare_list()
 
     print('-' * 10 + '추가된 사진' + '-' * 10)
     print(compare_lst)
 
+    # image update된 경우 send email
     send_mail(tuple(compare_lst))
