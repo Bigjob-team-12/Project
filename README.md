@@ -32,7 +32,7 @@ $ main_project
 │       │       │     └─ query_list  # Temp directory for query image
 │       │       └─ working
 │       │             ├─ dog_breeds.txt  # Image statistics used in training 
-│       │             ├─ result.csv   #   
+│       │             ├─ result.csv   # List of image softmax by breeds
 │       │             ├─ to_reid.csv   # List of images that have passed Pearson correlation coefficient, region, and date filters
 │       │             ├─ to_web.csv   # List of images sent to the web
 │       │             └─ tmp.h5   # weights for classification model 
@@ -43,11 +43,11 @@ $ main_project
      │     └─ update_data.bat   # Batch file for crawling and Preprocessing 'post' images.    
      ├─ data_analysis
      │     ├─ dog_image_similarity
-     │     │          ├─ copy_image.py
-     │     │          ├─ crawling_to_preprocessed.py
-     │     │          ├─ dog_breed_similarity_comparison.py
-     │     │          ├─ extract_similar_image_path.py
-     │     │          └─ predict_dog_data.py
+     │     │          ├─ copy_image.py # Copy the file from the input path to the output path
+     │     │          ├─ crawling_to_preprocessed.py # After preprocessing, train the model and move the file
+     │     │          ├─ dog_breed_similarity_comparison.py # Image similarity comparison by pearson correlation
+     │     │          ├─ extract_similar_image_path.py # Filtering images through breed classifier
+     │     │          └─ predict_dog_data.py # Prediction by image
      │     └─ re_id
      │           └─ code
      │                ├─ reid_query.py   # Extract query image feature (512 vectors)
@@ -128,6 +128,7 @@ yaml==0.2.5
   - 웹 디자인 구상
   - Object detection & Image crop하는 code 작성 (Using faster R-CNN)   
 - **`200824-200831`**
+  - 윈도우 작업스케줄러를 이용해 배치파일 적용(데이터 수집, 적재, 모델 학습 자동화)
   - flow diagram 작성
   - Demo 용 웹 페이지 생성(flask, DB 연동)
   - 분류기와 re-id 연결
