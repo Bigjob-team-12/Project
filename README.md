@@ -40,6 +40,7 @@ $ main_project
 │               └─ dog_class ─ image   # Preprocessed image using YOLO-v4
 └─ _src
      ├─ batch
+     │     ├─ send_email.py     # Check updated DB and send e-mail
      │     └─ update_data.bat   # Batch file for crawling and Preprocessing 'post' images.    
      ├─ data_analysis
      │     ├─ dog_image_similarity
@@ -130,7 +131,7 @@ yaml==0.2.5
 - **`200824-200831`**
   - 윈도우 작업스케줄러를 이용해 배치파일 적용(데이터 수집, 적재, 모델 학습 자동화)
   - flow diagram 작성
-  - Demo 용 웹 페이지 생성(flask, DB 연동)
+  - 웹 페이지 생성(flask, DB 연동)
   - 분류기와 re-id 연결
   - Object detection & Image crop(이미지 전처리)에 YOLO-V4 사용
   - 날짜, 지역 필터링 적용
