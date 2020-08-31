@@ -1,42 +1,76 @@
-# 이미지 유사도 기반 실종 반려동물 찾기
+# 빅데이터 청년인재 고려대 과정 12조
 
-- 진행 기간: 2020. 07 ~ 2020. 09
+## 프로젝트 명 : 찾아주 Cat! :cat: Dog! :dog:
+- 진행 기간: 2020.07 ~ 2020.08
 
-#### 프로젝트 요약
-  - 인터넷에 산재되어 있는 유기동물 보호 정보를 취합하여 공고 이미지의 <b>시각적 유사도 기반</b> 추출합니다.
-  - <b>Fine-grained Classification</b>을 통해 생김새를 파악합니다. 외견적 특성을 정의할 수 있는 세부 품종 분류를 수행한 후 품종별 확률값을 도출합니다. 
-  - 도출된 확률값을 바탕으로 탐색 대상과 <b>Query Image의 Correlation </b>분석을 수행, 유사성이 낮은 개체를 후보군에서 제외합니다.
-  - <b>Metric Learning</b>을 통해 털의 색, 조합의 유사성을 확인합니다. 반려동물의 털은 여러 색의 혼합으로 구성된 경우가 많습니다. 
-  - 신규 등록 개체 확인은 주기적으로 자동 진행되며, 사용자 요청 시 기존 Query 이미지와 비교를 지속 수행하여 새로이 유사한 개체가 발견되었을 때 보호자에게 <b>알림</b>을 보냅니다.
-  - 데이터:
-    > for 모델 학습 - 품종 등 카테고리 labeled 된 배포 데이터셋 출처 다수  
-    > for 시스템 실사용 - 농림부 동물보호관리시스템, 유기동물네트워크 게시판 개인 업로드, SNS 등
-  - 모델 keywords:
-    > Metric Learning 
-    > DeepRanking, Attention
-    > Image Retrieval
-  - 기타 고려사항:
-    > 눈 색깔, 무늬 형태 등 도메인 특화 피처들의 반영 가능성  
-    > 야외 생활로 인한, 유기 기간에 따른 외형적 변화
-    
-  - 프로젝트 상세:
-    <b>특정 개체 특성 중심 탐색</b>
-    > 품종 등 메타데이터를 바탕으로 한 단순 검색을 넘어 개체의 시각적 특성을 바탕으로 한 유사성 비교를 수행합니다. 명확한 품종 분류가 어려우며 보호동물의 대부분을 차지하는 믹스견 역시 세부적인 외견적 특징을 분석하여 가장 유사한 개체를 찾아냅니다.
+## 1. 개발 배경 :question:
+- '19년 기준 유실 및 유기동물 **13만 5천마리** 중 입양(26.4%), **자연사`(24.8%)`**, **안락사`(21.8%)`**, **반환`(12.1%)`**
+- 만약 실제로 동물을 잃어버렸을 경우 **전단지 제작 베포, 커뮤니티 신고 게시, 관리시스템 수시 확인**
+- **"운 좋게"** 보호소 인계 시, **카운트타운** 시작.
+- [농림부 동물보호관리시스템 공고](https://www.animal.go.kr/front/awtis/public/publicList.do?menuNo=1000000055)에 **`7-10일`**, 일 평균 관리시스템 등록 수는 **`370건`**
+- 공고에 올라온 이후부터 매일 약 370건 개별 확인 필요
+- 기존 상용 서비스 비교
 
-    <b>파이프라인 자동화</b>
-    > 반려동물을 잃어버린 보호자는 커뮤니티 게시판과 오프라인 전단지를 오가며 탐색을 수행하게 됩니다. 보호소에 신규 등록되는 보호 동물을 전부 확인할 수 있다면 좋겠지만, 하루에도 300건 이상 등록되는 공고를 모두 확인하는 것은 쉽지 않습니다. 본 서비스는 주기적으로 신규 등록 개체를 자동 확인하여 기존 Query 개체와 비교하며, 유사도가 높은 개체가 발견될 경우 알림을 발신하여 보호자의 탐색 부담을 줄여줍니다.
+| **종합유기견보호센터** | **포인핸드** |
+| :-----------: | :-----------: |
+| 유기동물 종합 커뮤니티 | 사설 모바일 서비스 |
+| 실종 신고 등록 활성화 | 입양 사업에 초점 |
 
-    <b>Fine-Grained Classification</b>
-    > 개인지 고양이인지 판단하는 단순 분류가 아닌 포메라니안, 골든 리트리버와 같은 세부적인 품종의 외견 정보를 바탕으로 한 분류를 수행합니다. 각 품종은 얼핏 보기에는 유사하지만 애견협회에서 별도 기준을 세울 만큼 뚜렷한 차이를 가집니다. 또한 여러 품종의 특성을 가진 믹스견을 고려하여, 무슨 품종인지가 아닌 외형적으로 추측되는 각 품종의 확률값을 도출합니다.
+- 관리시스템 단순 연동 전달 이외 **`반환`에 특화된 기술집약 서비스 전무**
 
-    <b>Metric Learning</b>
-    > 반려동물의 털은 단일 컬러가 아닌 여러 색의 혼합으로 구성된 경우가 많습니다. 본 서비스는 유사한 색상과 조합을 가진 개체를 찾기 위해 Query 이미지와 검색 대상 이미지의 특성을 추출한 후, Similarity를 계산합니다. 이 때 Similarity 계산을 위해 Metric Learning을 적용하였습니다.
+## 2. 서비스 개요 :memo:
+- **사진 한장**으로 실종 동물을 찾도록 도와주는 **`반환` 특화 이미지 `매칭` 시스템**
+- 주요 기능
+  - 관리시스템 데이터 동기화 / 추가 수집 **자동화**
+  - 유저 업로드 이미지와 **유사도 기반** 검색 / 목록화
+  - 신규 공고 자동 매칭 및 **자동 이메일 발송**
+ 
+## 3. 팀 소개 및 역할 :two_men_holding_hands:
+> **손우진**
+- 개발 환경 구축, 전반적인 프로젝트 관리, 발표
 
-    <b>앙상블(stacking)</b>
-    > 생김새나 털의 색 배합, 둘 중 하나만으로 특정 개체를 찾기는 어렵습니다. 이목구비 형태의 유사성과 털의 색, 무늬 등 패턴의 유사성을 모두 확인하여 반영하기 위해 두 모델을 연결하여 Stacking 기법을 적용했습니다.
+> **권태양**
+- 공고 데이터 수집, 적재 및 모델 학습 자동화, 품종 분류기 구현
 
-    
-#### System
+> **이상헌**
+- 데이터 전처리, 분류 모델 평가, re id 구현, 발표 보조
+
+> **홍승혜**
+- 모델 학습 데이터 수집, WEB 구현, 이메일 push 기능 
+
+## 4. 시스템 구성도
+<div>
+  <img width="700" src="https://github.com/Bigjob-team-12/Project/blob/master/_img/system.png">
+</div>
+
+## 5. 프로젝트 요약
+- 인터넷에 산재되어 있는 **유기동물 공고 정보**를 `수집` 및 `적재`
+- **Fine-grained Classification**을 통해 생김새를 파악
+- 외견적 특성을 정의할 수 있는 세부 품종 분류를 수행한 후 **품종별 확률값 도출**
+- 도출된 확률값 바탕으로 탐색 대상과 Query Image의 **PCC(Pearson Correlation Coefficient)** 기반 `유사도 계산`, 유사성이 낮은 개체 후보군에서 제외
+- **Metric Learning**을 통해 털의 색, 조합의 유사성을 확인.
+- 작업 스케줄러를 이용해 **파이프라인 자동화**(신규 공고 데이터 수집 및 적재, 모델 학습)
+- 사용자 요청 시 기존 Query 이미지와 비교를 지속 수행, 새로이 유사한 개체가 발견되었을 때 **사용자에게 메일 발송**
+
+#### 주요 기능
+- **특정 개체 특성 중심 탐색**
+  > 품종 등 메타데이터를 바탕으로 한 단순 검색을 넘어 개체의 시각적 특성을 바탕으로 한 유사성 비교를 수행<br/>
+  공고 데이터의 90%를 차지하는 믹스견 역시 세부적인 특징을 분석해 유사한 개체를 찾아냄
+- **파이프라인 자동화**
+  > 주기적으로 신규 등록 개체 수집 및 분석하여 기존 Query 개체와 비교<br/>
+  유사도가 높은 개체 발견될 경우 메일 발송
+- **Fine-Grained Classification**
+  > 세부적인 품종의 외견 정보를 바탕으로 분류를 수행<br/>
+  여러 품종의 특성을 가진 믹스견을 고려해, 외형적으로 추측되는 각 품종의 확률값을 도출
+- **Metric Learning**
+  > Query 이미지와 유사한 색상(단일 컬러 및 여러 색의 혼합)인 개체를 찾기 위해 특성을 추출한 후, Similarity를 계산<br/>
+  Similarity 계산을 위해 Metric Learning을 적용
+- **Stacking ensemble**
+  > Fine-Grained Classification으로 각 품종 확률값 기준 필터링<br/>
+  필터링된 이미지를 Metric Learning을 통해 털의 색, 조합의 유사성 확인<br/>
+  이목구비 형태의 유사성과 털의 색, 무늬 등 패턴의 유사성을 모두 확인하기 위해 두 모델을 연결
+
+## 6. System
 ```Python
 $ main_project
 │
@@ -60,7 +94,7 @@ $ main_project
 └─ _src
      ├─ batch
      │     ├─ send_email.py     # Check updated DB and send e-mail
-     │     └─ update_data.bat   # Batch file for crawling and Preprocessing 'post' images.    
+     │     └─ update_data.bat   # Batch file for crawling and Preprocessing 'post' images
      ├─ data_analysis
      │     ├─ dog_image_similarity
      │     │          ├─ copy_image.py # Copy the file from the input path to the output path
@@ -77,7 +111,7 @@ $ main_project
      │                └─ model.py   # Model structure for train.py
      │                
      ├─ data_analysis
-     │     └─ data_collection_zooseyo.py
+     │     └─ data_collection_zooseyo.py # 'http://www.zooseyo.or.kr/zooseyo_or_kr.html' site data crawling
      ├─ data_processing
      │     └─ image_data_download.py # Code for downloading image 
      │     └─ yolo_v4
@@ -97,10 +131,11 @@ $ main_project
          │      └─ index.html   # Main page
          └─ app.py # Web Application (Calls Models)
 ```
-#### requirement
-python==3.8 <br>
-pytorch==1.6.0 (window, conda, cuda==10.1) conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
+
+## 7. requirement
 ```
+python==3.8
+pytorch==1.6.0 (window, conda, cuda==10.1) conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 absl-py==0.10.0
 easydict==1.9
 Flask==1.1.2
@@ -122,7 +157,8 @@ urllib3==1.25.9
 werkzeug==1.0.1
 yaml==0.2.5
 ```
-#### 프로젝트 진행 과정
+
+## 8. 프로젝트 진행 과정
 
 - **`200706-200710`**
   - 아이디어 회의
