@@ -78,7 +78,7 @@ $ main_project
          └─ app.py # Web Application (Calls Models)
 ```
 #### requirement
-python==3.8
+python==3.8 <br>
 pytorch==1.6.0 (window, conda, cuda==10.1) conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 ```
 absl-py==0.10.0
