@@ -77,8 +77,31 @@ $ main_project
          │      └─ index.html   # Main page
          └─ app.py # Web Application (Calls Models)
 ```
-
-
+#### requirement
+python==3.8
+pytorch==1.6.0 (window, conda, cuda==10.1) conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
+```
+absl-py==0.10.0
+easydict==1.9
+Flask==1.1.2
+Flask-Dropzone==1.5.4
+Flask-SQLAlchemy==2.4.4
+matplotlib==3.2.2
+numba==0.50.1
+numpy==1.18.5
+opencv-python==4.4.0.42
+pandas==1.0.5
+pillow==7.2.0
+pretrainedmodels==0.7.4
+pymysql==0.9.2
+scipy==1.4.1
+tensorflow==2.3.0 
+torchvision==0.7.0 
+tqdm==4.47.0
+urllib3==1.25.9
+werkzeug==1.0.1
+yaml==0.2.5
+```
 #### 프로젝트 진행 과정
 
 - **`200706-200710`**
