@@ -38,7 +38,7 @@
 > **홍승혜**
 - 모델 학습 데이터 수집, WEB 구현, 이메일 push 기능 
 
-## 4. 시스템 사용 
+## 4. 시스템 사용 Tool
 <div>
   <img width="700" src="https://github.com/Bigjob-team-12/Project/blob/master/_img/system.png">
 </div>
