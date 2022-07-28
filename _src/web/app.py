@@ -88,33 +88,29 @@ def ask():
 def answer():
     # get: 사용자 요청 고유번호(id) 및 페이지 번호(page)
     if request.method == 'GET':
-        page = request.args.get('page')
+        page = request.args.get('page', type=int, default=1)
 
         # 사용자 요청 이미지 노출; 로컬 로딩 문제 해결중
-        asked = list(dbquery('query_lost_animals', request.args.get('id')))
+        asked = list(dbquery('query_lost_animals', request.args.get('id'))[0])
         asked[5] = 'images/uploads/'+asked[5]
 
-        # 유사도 높은 이미지 DB에서 로드; test용 query(개별 로딩). 묶음 query로 수정 예정
-        sim = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        found = []
-        for _ in sim:
-            found.append(dbquery('temp_list', _))
+        # 유사도 높은 이미지 DB에서 로드
+        sims = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        found = dbquery('temp_list', sims)
         return render_template('find_my_dog_a.html', id=request.args.get('id'), page=page, asked=asked, found=found)
 
-    else:
-        return render_template('find_my_dog_a.html')
 
 """ DB 탐색 query """
-def dbquery(db, id):
+def dbquery(db, id, start=0, end=0):
     conn = sqlite3.connect(os.path.join(basedir, 'database.sqlite'))
     cur = conn.cursor()
     if db == 'query_lost_animals':
         cur.execute('SELECT * FROM {} WHERE id= {}'.format(db, id))
-    else:
-        cur.execute('SELECT * FROM {} WHERE NO= {}'.format(db, id))
-    row = cur.fetchone()
+    elif db == 'temp_list':
+        cur.execute('SELECT * FROM {} WHERE NO in {}'.format(db, id))
+    rows = cur.fetchall()
     conn.close()
-    return row
+    return rows
 ##################################################################
 
 
